@@ -1,0 +1,93 @@
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import exp1 from "@/assets/experience-1.jpg";
+import exp2 from "@/assets/experience-2.jpg";
+
+const features = [
+  {
+    title: "Nature-Integrated Design",
+    description: "Every space breathes with living greenery, natural wood, and earth-toned materials that ground you in the moment.",
+  },
+  {
+    title: "Artisan Craftsmanship",
+    description: "Hand-selected ceramics, custom bamboo fixtures, and bespoke furniture — each piece tells a story of its maker.",
+  },
+  {
+    title: "Mindful Dining",
+    description: "A philosophy of slow food meets conscious sourcing. Seasonal, local, and prepared with meditative intention.",
+  },
+];
+
+const ExperienceSection = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section className="section-padding bg-primary" id="experience" ref={ref}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16 md:mb-24"
+        >
+          <span className="section-subheading text-gold/80">The Experience</span>
+          <h2 className="section-heading text-primary-foreground mt-4">
+            A Sanctuary for the Senses
+          </h2>
+        </motion.div>
+
+        {/* Image Grid */}
+        <div className="grid md:grid-cols-2 gap-6 mb-16 md:mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="overflow-hidden"
+          >
+            <img
+              src={exp1}
+              alt="Golden pendant lights over wooden tables with plants"
+              className="w-full h-[350px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="overflow-hidden"
+          >
+            <img
+              src={exp2}
+              alt="Cozy bamboo lounge with tropical plants"
+              className="w-full h-[350px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+            />
+          </motion.div>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-12">
+          {features.map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 + i * 0.15 }}
+              className="text-center"
+            >
+              <div className="w-8 h-px bg-gold mx-auto mb-6" />
+              <h3 className="font-serif text-xl md:text-2xl text-primary-foreground mb-4">
+                {feature.title}
+              </h3>
+              <p className="text-primary-foreground/60 font-sans text-sm leading-relaxed">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ExperienceSection;
