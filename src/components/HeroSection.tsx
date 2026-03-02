@@ -44,7 +44,7 @@ const HeroSection = () => {
         </motion.p>
 
         <motion.a
-          href="#reserve"
+          href="/reserve"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.5 }}

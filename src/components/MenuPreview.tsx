@@ -28,7 +28,11 @@ const menuItems = [
   },
 ];
 
-const MenuPreview = () => {
+interface MenuPreviewProps {
+  showViewMore?: boolean;
+}
+
+const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -87,10 +91,10 @@ const MenuPreview = () => {
           className="text-center mt-12"
         >
           <a
-            href="#"
+            href={showViewMore ? "/menu" : "/reserve"}
             className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-sans font-medium text-accent hover:text-gold transition-colors duration-300"
           >
-            View Full Menu
+            {showViewMore ? "View All Dishes" : "Request Reservation"}
             <span className="w-8 h-px bg-current" />
           </a>
         </motion.div>

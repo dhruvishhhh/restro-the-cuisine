@@ -1,0 +1,26 @@
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ReservationSection from "@/components/ReservationSection";
+import { motion } from "framer-motion";
+import BackButton from "@/components/BackButton";
+
+const ReservationPage = () => {
+    return (
+        <div className="min-h-screen bg-background pt-24">
+            <Header />
+            <motion.main
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+            >
+                <div className="max-w-7xl mx-auto px-6 py-6">
+                    <BackButton />
+                    <ReservationSection fullPage={true} />
+                </div>
+            </motion.main>
+            <Footer />
+        </div>
+    );
+};
+
+export default ReservationPage;

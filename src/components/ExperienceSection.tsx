@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import exp1 from "@/assets/experience-1.jpg";
 import exp2 from "@/assets/experience-2.jpg";
+import { ArrowRight } from "lucide-react";
 
 const features = [
   {
@@ -18,7 +19,11 @@ const features = [
   },
 ];
 
-const ExperienceSection = () => {
+interface ExperienceSectionProps {
+  showViewMore?: boolean;
+}
+
+const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -47,7 +52,7 @@ const ExperienceSection = () => {
           >
             <img
               src={exp1}
-              alt="Golden pendant lights over wooden tables with plants"
+              alt="Golden pawn dant lights over wooden tables with plants"
               className="w-full h-[350px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
             />
           </motion.div>
@@ -85,6 +90,18 @@ const ExperienceSection = () => {
             </motion.div>
           ))}
         </div>
+
+        {showViewMore && (
+          <div className="mt-16 text-center">
+            <a
+              href="/experience"
+              className="inline-flex items-center gap-4 px-10 py-3 border border-gold/30 text-gold uppercase tracking-[0.3em] text-xs font-bold hover:bg-gold/10 transition-all group"
+            >
+              Exlpore More Details
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

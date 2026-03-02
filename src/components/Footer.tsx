@@ -3,15 +3,28 @@ import { Instagram, Facebook, Twitter } from "lucide-react";
 const footerLinks = [
   {
     heading: "Visit",
-    links: ["Menu", "Locations", "Book A Table", "Events"],
+    links: [
+      { label: "Menu", href: "/menu" },
+      { label: "Locations", href: "/locations" },
+      { label: "Book A Table", href: "/reserve" },
+      { label: "Track Request", href: "/track" },
+    ],
   },
   {
-    heading: "Company",
-    links: ["About", "Awards", "Press", "Franchise", "Careers"],
+    heading: "Explore",
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Experience", href: "/experience" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
-    heading: "Connect",
-    links: ["Contact", "Blog", "Newsletter"],
+    heading: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Admin Login", href: "/admin/login" },
+    ],
   },
 ];
 
@@ -33,13 +46,13 @@ const Footer = () => {
               Crafted with Soul.
             </p>
             <div className="flex gap-4 mt-6">
-              <a href="#" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Instagram">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Instagram">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Facebook">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Facebook">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Twitter">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/40 hover:text-gold transition-colors" aria-label="Twitter">
                 <Twitter size={18} />
               </a>
             </div>
@@ -53,12 +66,12 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-3">
                 {col.links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#"
+                      href={link.href}
                       className="text-primary-foreground/50 hover:text-gold font-sans text-sm transition-colors duration-300"
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -68,17 +81,14 @@ const Footer = () => {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="pt-12 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-primary-foreground/30 font-sans text-xs">
-            © 2024 House of Earth Monk. All rights reserved.
+            © 2024 House of Earth Monk. All rights reserved. {" "}
+            <a href="/admin/login" className="hover:text-gold transition-colors duration-300 opacity-20 hover:opacity-100">Admin</a>
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-primary-foreground/30 hover:text-gold font-sans text-xs transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="text-primary-foreground/30 hover:text-gold font-sans text-xs transition-colors">
-              Terms of Service
-            </a>
+          <div className="flex gap-8 text-primary-foreground/30 font-sans text-xs uppercase tracking-widest">
+            <a href="#" className="hover:text-gold transition-colors duration-300">Privacy Policy</a>
+            <a href="#" className="hover:text-gold transition-colors duration-300">Terms of Service</a>
           </div>
         </div>
       </div>

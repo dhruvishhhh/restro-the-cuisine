@@ -2,8 +2,13 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import aboutImg from "@/assets/about-coffee.jpg";
+import { ArrowRight } from "lucide-react";
 
-const AboutSection = () => {
+interface AboutSectionProps {
+  showViewMore?: boolean;
+}
+
+const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -50,13 +55,24 @@ const AboutSection = () => {
               and serve with warmth. Every ingredient is thoughtfully chosen,
               every dish a meditation on flavor and form.
             </p>
-            <a
-              href="#experience"
-              className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-sans font-medium text-accent hover:text-gold transition-colors duration-300 mt-4"
-            >
-              Discover More
-              <span className="w-8 h-px bg-current" />
-            </a>
+
+            {showViewMore ? (
+              <a
+                href="/about"
+                className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] font-sans font-bold text-accent hover:text-gold transition-colors duration-300 mt-4 group"
+              >
+                Read Fully
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            ) : (
+              <a
+                href="/reserve"
+                className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-sans font-medium text-accent hover:text-gold transition-colors duration-300 mt-4"
+              >
+                Discover More
+                <span className="w-8 h-px bg-current" />
+              </a>
+            )}
           </motion.div>
         </div>
       </div>

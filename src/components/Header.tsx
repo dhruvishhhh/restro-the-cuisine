@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import EarthMonkLogo from "./EarthMonkLogo";
+import { useLocation } from "react-router-dom";
 
 const navLinks = [
-  { label: "Menu", href: "#menu" },
-  { label: "Experience", href: "#experience" },
-  { label: "Locations", href: "#locations" },
-  { label: "Reserve", href: "#reserve" },
-  { label: "Contact", href: "#contact" },
+  { label: "HOME", href: "/" },
+  { label: "ABOUT", href: "/about" },
+  { label: "MENU", href: "/menu" },
+  { label: "EXPERIENCE", href: "/experience" },
+  { label: "LOCATIONS", href: "/locations" },
+  { label: "CONTACT", href: "/contact" },
 ];
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -20,24 +25,40 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const navLinkClasses = (linkHref: string) => {
+    const isActive = location.pathname === linkHref;
+    // Brown text ONLY when on a subpage (cream bg) and NOT scrolled
+    const isLightBg = !scrolled && !isHomePage;
+
+    return `text-[10px] uppercase tracking-[0.2em] font-sans font-bold transition-all duration-300 ${isLightBg
+      ? "text-primary hover:text-gold"
+      : "text-primary-foreground hover:text-gold"
+      } ${isActive ? "text-gold" : ""}`;
+  };
+
   return (
     <>
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+          ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
+          : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12 py-4">
           {/* Logo */}
-          <a href="#" className="flex flex-col items-center gold-glow">
-            <span className="font-serif text-xl md:text-2xl font-semibold tracking-wide text-gold">
-              House of Earth Monk
-            </span>
+          <a href="/" className="flex items-center gap-2 group">
+            <EarthMonkLogo className="w-12 h-12" />
+            <div className="flex flex-col">
+              <span className="font-serif text-lg md:text-xl font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
+                EARTH MONK
+              </span>
+              <span className="text-[8px] uppercase tracking-[0.4em] text-gold/60 -mt-1">
+                SANCTUARY
+              </span>
+            </div>
           </a>
 
           {/* Desktop Nav */}
@@ -46,14 +67,14 @@ const Header = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm uppercase tracking-[0.2em] font-sans font-medium text-primary-foreground/80 hover:text-gold transition-colors duration-300"
+                className={navLinkClasses(link.href)}
               >
                 {link.label}
               </a>
             ))}
             <a
-              href="#reserve"
-              className="ml-4 px-6 py-2.5 border border-gold/50 text-gold text-sm uppercase tracking-[0.15em] font-sans font-medium hover:bg-gold/10 transition-all duration-300"
+              href="/reserve"
+              className="ml-4 px-6 py-2.5 bg-gold text-primary font-bold text-[10px] uppercase tracking-[0.2em] rounded-sm hover:bg-gold/90 transition-all duration-300 shadow-lg shadow-gold/20"
             >
               Book A Table
             </a>
@@ -62,7 +83,7 @@ const Header = () => {
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden text-primary-foreground/80"
+            className={`md:hidden ${scrolled || !isHomePage ? 'text-primary' : 'text-primary-foreground'}`}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -93,12 +114,12 @@ const Header = () => {
               </motion.a>
             ))}
             <motion.a
-              href="#reserve"
+              href="/reserve"
               onClick={() => setMobileOpen(false)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="mt-4 px-8 py-3 border border-gold/50 text-gold uppercase tracking-[0.15em] font-sans hover:bg-gold/10 transition-all"
+              className="mt-4 px-8 py-3 bg-gold text-primary font-bold uppercase tracking-[0.2em] rounded-sm"
             >
               Book A Table
             </motion.a>
