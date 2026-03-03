@@ -1,133 +1,87 @@
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
 import {
-    sendSignInLinkToEmail,
-    isSignInWithEmailLink,
-    signInWithEmailLink
+    signInWithEmailAndPassword,
+    onAuthStateChanged
 } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, CheckCircle2 } from "lucide-react";
+import { Loader2, Mail, Lock, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [sent, setSent] = useState(false);
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    // Handle the sign-in link on mount
+    // If already logged in, redirect to admin
     useEffect(() => {
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-            let emailForSignIn = window.localStorage.getItem("emailForSignIn");
-
-            if (!emailForSignIn) {
-                emailForSignIn = window.prompt("Please provide your email for confirmation");
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigate("/admin");
             }
+        });
+        return () => unsubscribe();
+    }, [navigate]);
 
-            if (emailForSignIn) {
-                setLoading(true);
-                signInWithEmailLink(auth, emailForSignIn, window.location.href)
-                    .then(() => {
-                        window.localStorage.removeItem("emailForSignIn");
-                        toast({
-                            title: "Success",
-                            description: "You have been signed in.",
-                        });
-                        navigate("/admin");
-                    })
-                    .catch((error) => {
-                        console.error("Error signing in with email link", error);
-                        toast({
-                            variant: "destructive",
-                            title: "Error",
-                            description: error.message || "Failed to sign in. The link may have expired.",
-                        });
-                    })
-                    .finally(() => setLoading(false));
-            }
-        }
-    }, [navigate, toast]);
-
-    const handleSendLink = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) return;
-
         setLoading(true);
-        const actionCodeSettings = {
-            // URL you want to redirect back to. Ensure this matches your route.
-            url: window.location.origin + "/admin/login",
-            handleCodeInApp: true,
-        };
 
         try {
-            await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-            window.localStorage.setItem("emailForSignIn", email);
-            setSent(true);
+            // Simply sign in with email and password.
+            // Access is now controlled entirely via Firebase Console.
+            await signInWithEmailAndPassword(auth, email, password);
+
             toast({
-                title: "Link Sent",
-                description: "Check your email for the magic link to sign in.",
+                title: "Welcome back!",
+                description: "Successfully logged in to the Sanctuary Admin Panel.",
             });
+            navigate("/admin");
         } catch (error: any) {
-            console.error("Error sending link", error);
+            console.error("Login error:", error);
+            let errorMessage = "Invalid email or password. Please try again.";
+
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                errorMessage = "Invalid credentials. Please check your email and password.";
+            } else if (error.code === 'auth/too-many-requests') {
+                errorMessage = "Too many failed attempts. Please try again later.";
+            }
+
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: error.message || "Failed to send the link. Please try again.",
+                title: "Login Failed",
+                description: errorMessage,
             });
         } finally {
             setLoading(false);
         }
     };
 
-    if (sent) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background p-4">
-                <Card className="w-full max-w-md border-border bg-card text-card-foreground">
-                    <CardHeader className="text-center">
-                        <div className="mx-auto w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mb-4">
-                            <CheckCircle2 className="w-6 h-6 text-accent" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            We've sent a sign-in link to <span className="text-accent font-medium">{email}</span>. Click the link to securely access the admin panel.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardFooter className="flex flex-col gap-4">
-                        <p className="text-xs text-center text-muted-foreground">
-                            Can't find the email? Check your spam folder or try again.
-                        </p>
-                        <Button
-                            variant="outline"
-                            className="w-full border-border bg-transparent hover:bg-muted text-muted-foreground"
-                            onClick={() => setSent(false)}
-                        >
-                            Back to Login
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md border-border bg-card text-card-foreground">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center">Admin Access</CardTitle>
+                    <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+                        <ShieldCheck className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
                     <CardDescription className="text-center text-muted-foreground">
-                        Enter your email to receive a secure sign-in link
+                        Enter your credentials to access the sanctuary controls
                     </CardDescription>
                 </CardHeader>
-                <form onSubmit={handleSendLink}>
+                <form onSubmit={handleLogin}>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
+                            <label className="text-sm font-medium" htmlFor="email">Email</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
+                                    id="email"
                                     type="email"
                                     placeholder="admin@earthmonksanctuary.com"
                                     value={email}
@@ -137,14 +91,29 @@ const Login = () => {
                                 />
                             </div>
                         </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium" htmlFor="password">Password</label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="pl-10 bg-background border-border focus:border-accent transition-colors"
+                                    required
+                                />
+                            </div>
+                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-6"
                             disabled={loading}
                             type="submit"
                         >
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Magic Link"}
+                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
                         </Button>
                     </CardFooter>
                 </form>

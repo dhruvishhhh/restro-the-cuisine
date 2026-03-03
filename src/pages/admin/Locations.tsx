@@ -8,7 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, QrCode } from "lucide-react";
+import { MapPin, Loader2, Plus, Trash2 } from "lucide-react";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminHeader from "@/components/AdminHeader";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const AdminLocations = () => {
     const [user, setUser] = useState<any>(null);
@@ -16,6 +24,8 @@ const AdminLocations = () => {
     const [locations, setLocations] = useState<any[]>([]);
     const [newLocation, setNewLocation] = useState({ name: "", address: "", city: "Anand", province: "Gujarat" });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+    const [passwordInput, setPasswordInput] = useState("");
 
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -57,6 +67,15 @@ const AdminLocations = () => {
         }
     };
 
+    const handleVerifyPassword = () => {
+        if (passwordInput === "Monk@2026") {
+            setIsVerified(true);
+            toast({ title: "Sanctuary Access Granted", description: "You now have administrative control over locations." });
+        } else {
+            toast({ variant: "destructive", title: "Access Denied", description: "Incorrect sanctuary password." });
+        }
+    };
+
     const handleDeleteLocation = async (id: string) => {
         if (!confirm("Are you sure you want to delete this location?")) return;
         try {
@@ -69,138 +88,155 @@ const AdminLocations = () => {
 
     if (loading) return null;
 
-    return (
-        <div className="min-h-screen bg-background text-foreground flex">
-            {/* Sidebar */}
-            <aside className="w-64 border-r border-border bg-card flex flex-col">
-                <div className="p-6">
-                    <h1 className="text-xl font-bold text-primary flex items-center gap-2">
-                        <LayoutDashboard className="w-6 h-6" /> Admin Panel
-                    </h1>
-                </div>
-                <nav className="flex-1 px-4 space-y-2">
-                    <a href="/admin" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <LayoutDashboard className="w-5 h-5" /> Dashboard
-                    </a>
-                    <a href="/admin/reservations" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5" /> Reservations
-                    </a>
-                    <a href="/admin/tables" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <Users className="w-5 h-5" /> Table Management
-                    </a>
-                    <a href="/admin/locations" className="flex items-center gap-3 px-4 py-2 bg-primary text-primary-foreground rounded-lg transition-colors">
-                        <MapIcon className="w-5 h-5" /> Locations
-                    </a>
-                    <a href="/admin/scan" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <QrCode className="w-5 h-5" /> QR Scanner
-                    </a>
-                </nav>
-            </aside>
-
-            <main className="flex-1 p-8 space-y-8 overflow-auto">
-                <div>
-                    <h2 className="text-3xl font-bold text-foreground">Location Management</h2>
-                    <p className="text-muted-foreground">Add and manage restaurant sanctuary locations.</p>
-                </div>
-
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Add Location Form */}
-                    <Card className="border-border bg-card">
-                        <CardHeader>
-                            <CardTitle>Add New Location</CardTitle>
-                            <CardDescription>Enter details for a new sanctuary.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleAddLocation} className="space-y-4">
+    if (!isVerified) {
+        return (
+            <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
+                <AdminSidebar userEmail={user?.email} />
+                <main className="flex-1 overflow-auto">
+                    <AdminHeader />
+                    <div className="flex items-center justify-center p-8 min-h-[calc(100vh-80px)]">
+                        <Card className="w-full max-w-md border-border bg-card shadow-2xl">
+                            <CardHeader className="text-center">
+                                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                                    <MapPin className="w-8 h-8 text-primary" />
+                                </div>
+                                <CardTitle className="text-2xl font-serif">Sanctuary Control</CardTitle>
+                                <CardDescription>Enter the administrator password to manage locations.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Sanctuary Name</Label>
+                                    <Label>Administrator Password</Label>
                                     <Input
-                                        id="name"
-                                        placeholder="Earth Monk - Anand"
-                                        value={newLocation.name}
-                                        onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
-                                        required
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={passwordInput}
+                                        onChange={(e) => setPasswordInput(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyPassword()}
+                                        className="bg-background border-border"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="address">Address</Label>
-                                    <Input
-                                        id="address"
-                                        placeholder="123 Serenity Road"
-                                        value={newLocation.address}
-                                        onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="city">City</Label>
-                                        <Input
-                                            id="city"
-                                            value={newLocation.city}
-                                            onChange={(e) => setNewLocation({ ...newLocation, city: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="province">Province/State</Label>
-                                        <Input
-                                            id="province"
-                                            value={newLocation.province}
-                                            onChange={(e) => setNewLocation({ ...newLocation, province: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
-                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                                    Add Location
+                                <Button className="w-full gap-2 bg-primary hover:bg-primary/90" onClick={handleVerifyPassword}>
+                                    Verify & Access
                                 </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
-                    {/* Location List */}
-                    <Card className="lg:col-span-2 border-border bg-card">
-                        <CardHeader>
-                            <CardTitle>Active Sanctuaries</CardTitle>
-                            <CardDescription>Your current operational locations.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {locations.length === 0 ? (
-                                    <p className="text-center py-8 text-muted-foreground">No locations configured yet.</p>
-                                ) : (
-                                    locations.map((loc) => (
-                                        <div key={loc.id} className="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                                    <MapPin className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="font-bold text-foreground">{loc.name}</p>
-                                                        <span className="px-2 py-0.5 bg-accent/10 text-accent text-[10px] uppercase font-bold rounded-full border border-accent/20">
-                                                            {loc.city}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground">{loc.address}, {loc.province}</p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleDeleteLocation(loc.id)}
-                                                className="text-muted-foreground hover:text-destructive hover:bg-destructive/5"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+    return (
+        <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
+            <AdminSidebar userEmail={user?.email} />
+
+            <main className="flex-1 overflow-auto">
+                <AdminHeader />
+                <div className="p-8 space-y-8">
+                    <div>
+                        <h2 className="text-3xl font-bold text-foreground">Location Management</h2>
+                        <p className="text-muted-foreground">Add and manage restaurant sanctuary locations.</p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        {/* Add Location Form */}
+                        <Card className="border-border bg-card">
+                            <CardHeader>
+                                <CardTitle>Add New Location</CardTitle>
+                                <CardDescription>Enter details for a new sanctuary.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleAddLocation} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Sanctuary Name</Label>
+                                        <Input
+                                            id="name"
+                                            placeholder="Earth Monk - Anand"
+                                            value={newLocation.name}
+                                            onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="address">Address</Label>
+                                        <Input
+                                            id="address"
+                                            placeholder="123 Serenity Road"
+                                            value={newLocation.address}
+                                            onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="city">City</Label>
+                                            <Input
+                                                id="city"
+                                                value={newLocation.city}
+                                                onChange={(e) => setNewLocation({ ...newLocation, city: e.target.value })}
+                                                required
+                                            />
                                         </div>
-                                    ))
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="province">Province/State</Label>
+                                            <Input
+                                                id="province"
+                                                value={newLocation.province}
+                                                onChange={(e) => setNewLocation({ ...newLocation, province: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
+                                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                        Add Location
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
+
+                        {/* Location List */}
+                        <Card className="lg:col-span-2 border-border bg-card">
+                            <CardHeader>
+                                <CardTitle>Active Sanctuaries</CardTitle>
+                                <CardDescription>Your current operational locations.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {locations.length === 0 ? (
+                                        <p className="text-center py-8 text-muted-foreground">No locations configured yet.</p>
+                                    ) : (
+                                        locations.map((loc) => (
+                                            <div key={loc.id} className="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                                        <MapPin className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="font-bold text-foreground">{loc.name}</p>
+                                                            <span className="px-2 py-0.5 bg-accent/10 text-accent text-[10px] uppercase font-bold rounded-full border border-accent/20">
+                                                                {loc.city}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground">{loc.address}, {loc.province}</p>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleDeleteLocation(loc.id)}
+                                                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </main>
         </div>

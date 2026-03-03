@@ -83,13 +83,8 @@ const Footer = () => {
         {/* Bottom */}
         <div className="pt-12 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-primary-foreground/30 font-sans text-xs">
-            © 2024 House of Earth Monk. All rights reserved. {" "}
-            <a href="/admin/login" className="hover:text-gold transition-colors duration-300 opacity-20 hover:opacity-100">Admin</a>
+            © 2024 House of Earth Monk. All rights reserved.
           </p>
-          <div className="flex gap-8 text-primary-foreground/30 font-sans text-xs uppercase tracking-widest">
-            <a href="#" className="hover:text-gold transition-colors duration-300">Privacy Policy</a>
-            <a href="#" className="hover:text-gold transition-colors duration-300">Terms of Service</a>
-          </div>
         </div>
       </div>
     </footer>

@@ -11,23 +11,30 @@ import {
     Calendar,
     LayoutDashboard,
     LogOut,
-    Settings,
     Bell,
     Search,
     Loader2,
     Map as MapIcon,
     QrCode,
-    TrendingUp,
-    AlertCircle,
-    ArrowRight,
     Power,
-    ShieldOff
+    ShieldOff,
+    Settings,
+    MapPin as MapPinIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { Input } from "@/components/ui/input"; // Assuming you have an Input component
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import AdminDataCenter from "@/components/AdminDataCenter";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminHeader from "@/components/AdminHeader";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Dashboard = () => {
     const [user, setUser] = useState<any>(null);
@@ -37,11 +44,13 @@ const Dashboard = () => {
     const [isUpdatingPause, setIsUpdatingPause] = useState(false);
     const [dailyRequirement, setDailyRequirement] = useState("");
     const [isUpdatingReq, setIsUpdatingReq] = useState(false);
+    const [locationPassword, setLocationPassword] = useState("");
+    const [isPassDialogOpen, setIsPassDialogOpen] = useState(false);
     const [stats, setStats] = useState([
         { name: "Reservations", value: "0", icon: Calendar, color: "text-accent", bg: "bg-accent/10" },
-        { name: "Locations", value: "1", icon: MapPin, color: "text-terracotta", bg: "bg-terracotta/10" },
         { name: "Active Tables", value: "0", icon: Users, color: "text-gold", bg: "bg-gold/10" },
-        { name: "Time Slots", value: "12", icon: Clock, color: "text-sage", bg: "bg-sage/10" },
+        { name: "Time Slots", value: "25", icon: Clock, color: "text-sage", bg: "bg-sage/10" },
+        { name: "Locations", value: "1", icon: MapPin, color: "text-terracotta", bg: "bg-terracotta/10" },
     ]);
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -135,6 +144,7 @@ const Dashboard = () => {
     };
 
     const getInitials = (name: string) => {
+        if (!name) return "A";
         return name
             .split(" ")
             .map(n => n[0])
@@ -159,6 +169,20 @@ const Dashboard = () => {
         }
     };
 
+    const handleVerifyLocationAccess = () => {
+        if (locationPassword === "Monk@2026") {
+            setIsPassDialogOpen(false);
+            setLocationPassword("");
+            navigate("/admin/locations");
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Access Denied",
+                description: "Incorrect sanctuary administrator password."
+            });
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
@@ -168,69 +192,12 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex">
-            {/* Sidebar remains same... */}
-            <aside className="w-64 border-r border-border bg-card flex flex-col">
-                <div className="p-6">
-                    <h1 className="text-xl font-bold text-primary flex items-center gap-2">
-                        <LayoutDashboard className="w-6 h-6" /> Admin Panel
-                    </h1>
-                </div>
-
-                <nav className="flex-1 px-4 space-y-2">
-                    <a href="/admin" className="flex items-center gap-3 px-4 py-2 bg-primary text-primary-foreground rounded-lg transition-colors">
-                        <LayoutDashboard className="w-5 h-5" /> Dashboard
-                    </a>
-                    <a href="/admin/reservations" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5" /> Reservations
-                    </a>
-                    <a href="/admin/tables" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <Users className="w-5 h-5" /> Table Management
-                    </a>
-                    <a href="/admin/locations" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <MapIcon className="w-5 h-5" /> Locations
-                    </a>
-                    <a href="/admin/scan" className="flex items-center gap-3 px-4 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors">
-                        <QrCode className="w-5 h-5" /> QR Scanner
-                    </a>
-                </nav>
-
-                <div className="p-4 border-t border-border">
-                    <div className="flex items-center gap-3 px-4 py-2 text-muted-foreground">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold uppercase">
-                            {user?.email?.[0]}
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-medium text-foreground truncate">{user?.email}</p>
-                            <p className="text-xs text-muted-foreground">Administrator</p>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                            <LogOut className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </div>
-            </aside>
+        <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
+            <AdminSidebar userEmail={user?.email} />
 
             {/* Main Content */}
             <main className="flex-1 overflow-auto">
-                <header className="h-16 border-b border-border bg-card/50 flex items-center justify-between px-8">
-                    <div className="relative w-96">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <input
-                            type="text"
-                            placeholder="Search reservations, users..."
-                            className="w-full bg-background border-border rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-accent transition-colors text-foreground"
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                            <Bell className="w-5 h-5" />
-                        </Button>
-                        <div className="w-px h-6 bg-border mx-2" />
-                        <p className="text-sm text-muted-foreground">Welcome back, Admin</p>
-                    </div>
-                </header>
+                <AdminHeader />
 
                 <div className="p-8 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -320,13 +287,45 @@ const Dashboard = () => {
                                 </CardContent>
                             </Card>
 
+
+
+
                             <Card className="border-border bg-card shadow-sm hover:shadow-md transition-shadow">
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Quick Actions</CardTitle>
+                                    <CardTitle className="text-lg">Sanctuary Control</CardTitle>
+                                    <CardDescription>Advanced location and sanctuary management.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
+                                    <Dialog open={isPassDialogOpen} onOpenChange={setIsPassDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button className="w-full bg-terracotta hover:bg-terracotta/90 text-white justify-start gap-3">
+                                                <MapPin className="w-4 h-4" /> Manage Locations
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-md bg-card border-border">
+                                            <DialogHeader>
+                                                <DialogTitle>Administrator Verification</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="space-y-4 py-4">
+                                                <div className="space-y-2">
+                                                    <Label>Sanctuary Admin Password</Label>
+                                                    <Input
+                                                        type="password"
+                                                        placeholder="••••••••"
+                                                        value={locationPassword}
+                                                        onChange={(e) => setLocationPassword(e.target.value)}
+                                                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyLocationAccess()}
+                                                    />
+                                                </div>
+                                                <Button className="w-full gap-2" onClick={handleVerifyLocationAccess}>
+                                                    Verify & Open Access
+                                                </Button>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+
                                     <a href="/admin/reservations" className="block">
-                                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground justify-start gap-3">
+                                        <Button variant="outline" className="w-full border-border bg-background hover:bg-muted text-foreground justify-start gap-3">
                                             <Calendar className="w-4 h-4" /> View All Reservations
                                         </Button>
                                     </a>
@@ -337,6 +336,8 @@ const Dashboard = () => {
                                     </a>
                                 </CardContent>
                             </Card>
+
+                            <AdminDataCenter />
 
                             <Card className="border-border bg-card">
                                 <CardHeader>
@@ -359,8 +360,6 @@ const Dashboard = () => {
                                     </Button>
                                 </CardContent>
                             </Card>
-
-                            <AdminDataCenter />
                         </div>
                     </div>
                 </div>

@@ -5,5 +5,17 @@ service cloud.firestore {
     match /locations/{doc} { allow read, write: if true; }
     match /tables/{doc} { allow read, write: if true; }
     match /timeSlots/{doc} { allow read, write: if true; }
+    
+    // Admin management rules
+    match /authorized_admins/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Admin presence rules (Heartbeat)
+    match /admin_presence/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
   }
 }

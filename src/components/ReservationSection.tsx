@@ -11,10 +11,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
-const locations = ["Anand, Gujarat"];
 const guestOptions = ["1", "2", "3", "4", "5", "6", "7", "8+"];
 
 const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
+  const [locations, setLocations] = useState<any[]>([]);
   const ref = useRef(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -27,18 +27,33 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
     name: "",
     email: "",
     phone: "",
-    location: "Anand, Gujarat",
+    location: "",
     time: "",
     guests: "",
   });
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, "settings", "reservations"), (docSnap) => {
+    const unsubscribeSettings = onSnapshot(doc(db, "settings", "reservations"), (docSnap) => {
       if (docSnap.exists()) {
         setIsPaused(docSnap.data().isPaused || false);
       }
     });
-    return () => unsubscribe();
+
+    const unsubscribeLocations = onSnapshot(collection(db, "locations"), (snapshot) => {
+      const locs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
+      setLocations(locs);
+      if (locs.length > 0) {
+        setFormData(prev => {
+          if (!prev.location) return { ...prev, location: locs[0].name };
+          return prev;
+        });
+      }
+    });
+
+    return () => {
+      unsubscribeSettings();
+      unsubscribeLocations();
+    };
   }, []);
 
   const timeSlots = [];
@@ -213,12 +228,20 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
               </div>
               <div className="space-y-1">
                 <label className={labelClasses}>Location</label>
-                <input
-                  type="text"
-                  readOnly
-                  className={`${inputClasses} opacity-60 cursor-not-allowed`}
+                <select
+                  required
+                  className={selectClasses}
                   value={formData.location}
-                />
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                >
+                  {locations.length === 0 ? (
+                    <option value="" disabled>Loading locations...</option>
+                  ) : (
+                    locations.map(loc => (
+                      <option key={loc.id} value={loc.name} className="text-foreground bg-background">{loc.name}</option>
+                    ))
+                  )}
+                </select>
               </div>
               <div className="space-y-1">
                 <label className={labelClasses}>Select Date</label>
