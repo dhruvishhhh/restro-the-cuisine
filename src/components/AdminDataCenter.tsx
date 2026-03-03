@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 const AdminDataCenter = () => {
     const [reservations, setReservations] = useState<any[]>([]);
     const [tables, setTables] = useState<any[]>([]);
+    const [isPaused, setIsPaused] = useState(false);
+    const [isTogglingPause, setIsTogglingPause] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -19,11 +21,32 @@ const AdminDataCenter = () => {
         const unsubscribeTables = onSnapshot(collection(db, "tables"), (snap) => {
             setTables(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         });
+        const unsubscribePause = onSnapshot(doc(db, "settings", "reservations"), (docSnap) => {
+            if (docSnap.exists()) {
+                setIsPaused(docSnap.data().isPaused || false);
+            }
+        });
         return () => {
             unsubscribeRes();
             unsubscribeTables();
+            unsubscribePause();
         };
     }, []);
+
+    const toggleBookingStatus = async () => {
+        setIsTogglingPause(true);
+        try {
+            await setDoc(doc(db, "settings", "reservations"), { isPaused: !isPaused }, { merge: true });
+            toast({
+                title: !isPaused ? "Reservations Paused" : "Reservations Resumed",
+                description: !isPaused ? "Public booking is now disabled." : "Public booking is now accepting requests."
+            });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: "Failed to toggle booking status." });
+        } finally {
+            setIsTogglingPause(false);
+        }
+    };
 
     const convertToCSV = (data: any[]) => {
         if (data.length === 0) return "";
