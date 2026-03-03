@@ -428,6 +428,7 @@ const Tables = () => {
                 const { x, y, lines } = computeSnap(rawX, rawY, tableId);
 
                 setLocalDragPos(prev => ({ ...prev, [tableId]: { x, y } }));
+                lastDragPosRef.current = { x, y };
                 setActiveLines(lines);
             });
         };
