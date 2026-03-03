@@ -148,6 +148,6 @@ const AdminDataCenter = () => {
                 </CardContent>
             </Card>
         </div>
-    );
+};
 
 export default AdminDataCenter;
