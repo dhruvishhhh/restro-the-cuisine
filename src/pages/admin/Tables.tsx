@@ -168,8 +168,9 @@ const Tables = () => {
 
         const q = query(collection(db, "tables"));
         const tableSub = onSnapshot(q, (snapshot) => {
+            // Don't update tables from Firestore while dragging - prevents "jump" reset
+            if (isDraggingRef.current) return;
             const allTables = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
-            // Sort in memory to avoid index requirement
             allTables.sort((a: any, b: any) => {
                 if (a.location !== b.location) return a.location.localeCompare(b.location);
                 return a.marking.localeCompare(b.marking);
