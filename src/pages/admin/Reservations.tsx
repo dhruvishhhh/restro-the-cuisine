@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
+import { sendApprovalEmail, generateApprovalEmailHTML } from "@/lib/emailService";
 import {
     Dialog,
     DialogContent,
