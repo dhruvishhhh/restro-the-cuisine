@@ -187,8 +187,12 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
               <div className="absolute inset-0 z-50 bg-primary/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center border border-gold/10">
                 <ShieldOff className="w-12 h-12 text-gold mb-6" />
                 <h3 className="section-heading text-primary-foreground text-2xl mb-4">Reservations Paused</h3>
-                <p className="text-primary-foreground/60 max-w-sm mb-8 font-sans">We are fully booked. Check status or call for urgent inquiry.</p>
-                <a href="tel:+911234567890" className="px-8 py-3 bg-gold text-primary font-bold uppercase tracking-widest text-xs">Call For Inquiry</a>
+                <p className="text-primary-foreground/60 max-w-sm mb-8 font-sans leading-relaxed">
+                  We are currently at capacity or undergoing maintenance. Please check back later or call for urgent sanctuary inquiries.
+                </p>
+                <a href="tel:+911234567890" className="px-8 py-3 bg-gold text-primary font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2">
+                  <span>+91 12345 67890</span> — Call For Inquiry
+                </a>
               </div>
             )}
 

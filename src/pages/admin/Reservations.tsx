@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
+import { sendApprovalEmail, generateApprovalEmailHTML } from "@/lib/emailService";
 import {
     Dialog,
     DialogContent,
@@ -150,12 +151,26 @@ const Reservations = () => {
 
             const updatedRes = { ...selectedResForApproval, status: 'approved', tableMarking: selectedTable.marking, checkInToken };
 
+            // Attempt to send automated email
+            const emailSent = await sendApprovalEmail({
+                to_email: updatedRes.email,
+                to_name: updatedRes.name,
+                date: updatedRes.date,
+                time: updatedRes.time,
+                guests: updatedRes.guests,
+                location: updatedRes.location,
+                table_marking: selectedTable.marking,
+                check_in_token: checkInToken,
+            });
+
             setSelectedResForApproval(null);
             setSelectedResForEmail(updatedRes);
 
             toast({
                 title: "Reservation Approved",
-                description: `Assigned to ${selectedTable.marking}. Confirmation details ready.`
+                description: emailSent
+                    ? `Assigned to ${selectedTable.marking}. Confirmation email sent to ${updatedRes.email}.`
+                    : `Assigned to ${selectedTable.marking}. Email not configured — use the preview to send manually.`
             });
         } catch (error) {
             console.error("Approval error:", error);

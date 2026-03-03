@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
@@ -118,11 +118,21 @@ const ScanCheckIn = () => {
                 checkInTime: new Date()
             });
 
-            // 2. Update Linked Table Status
+            // 2. Update Linked Table Status (global + slot-specific)
             if (scannedResult.tableId) {
                 await updateDoc(doc(db, "tables", scannedResult.tableId), {
                     status: "occupied"
                 });
+
+                // Update table_slots for this specific date/time
+                const slotDocId = `${scannedResult.tableId}_${scannedResult.date}_${scannedResult.time}`;
+                await setDoc(doc(db, "table_slots", slotDocId), {
+                    tableId: scannedResult.tableId,
+                    date: scannedResult.date,
+                    slot: scannedResult.time,
+                    status: "occupied",
+                    updatedAt: new Date()
+                }, { merge: true });
             }
 
             toast({
