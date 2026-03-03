@@ -147,6 +147,10 @@ const Tables = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
+    const zoomRef = useRef(zoom);
+    zoomRef.current = zoom;
+    const offsetRef = useRef(offset);
+    offsetRef.current = offset;
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
