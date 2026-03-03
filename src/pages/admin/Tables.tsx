@@ -918,9 +918,8 @@ const Tables = () => {
                                                         isSelected={selectedTableId === table.id}
                                                         onSelect={setSelectedTableId}
                                                         isActiveDrag={activeDragId === table.id}
-                                                        onDragStart={() => setActiveDragId(table.id)}
-                                                        onDrag={(e: any, info: any) => handleDragMove(table.id, info)}
-                                                        onDragEnd={(e: any, info: any) => handleTableDrag(table.id, info)}
+                                                        localPos={localDragPos[table.id]}
+                                                        onPointerDown={(e: React.PointerEvent) => handlePointerDown(table.id, e)}
                                                     />
                                                 );
                                             })}
