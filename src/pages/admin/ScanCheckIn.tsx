@@ -118,11 +118,21 @@ const ScanCheckIn = () => {
                 checkInTime: new Date()
             });
 
-            // 2. Update Linked Table Status
+            // 2. Update Linked Table Status (global + slot-specific)
             if (scannedResult.tableId) {
                 await updateDoc(doc(db, "tables", scannedResult.tableId), {
                     status: "occupied"
                 });
+
+                // Update table_slots for this specific date/time
+                const slotDocId = `${scannedResult.tableId}_${scannedResult.date}_${scannedResult.time}`;
+                await setDoc(doc(db, "table_slots", slotDocId), {
+                    tableId: scannedResult.tableId,
+                    date: scannedResult.date,
+                    slot: scannedResult.time,
+                    status: "occupied",
+                    updatedAt: new Date()
+                }, { merge: true });
             }
 
             toast({

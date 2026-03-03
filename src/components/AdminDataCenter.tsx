@@ -145,9 +145,9 @@ const AdminDataCenter = () => {
                         <p className="text-[10px] text-muted-foreground">{tables.length} Records</p>
                     </div>
                 </Button>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </div>
     );
-};
 
 export default AdminDataCenter;
