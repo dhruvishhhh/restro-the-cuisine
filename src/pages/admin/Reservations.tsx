@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
+import { sendApprovalEmail, generateApprovalEmailHTML } from "@/lib/emailService";
 import {
     Dialog,
     DialogContent,
@@ -88,17 +89,6 @@ const Reservations = () => {
             unsubscribeLocations();
         };
     }, [navigate]);
-
-    const sendAutomatedEmail = async (res: any) => {
-        // This is a placeholder for an automated email service like EmailJS or a Cloud Function.
-        // It should contain the reservation details and the check-in token for the QR code.
-        console.log("Automated Email Triggered for:", res.email, {
-            token: res.checkInToken,
-            details: `${res.name}, ${res.date} at ${res.time}, Table ${res.tableMarking}`
-        });
-
-        // Example implementation with EmailJS would go here
-    };
 
     const openApprovalModal = async (reservation: any) => {
         try {
@@ -161,15 +151,26 @@ const Reservations = () => {
 
             const updatedRes = { ...selectedResForApproval, status: 'approved', tableMarking: selectedTable.marking, checkInToken };
 
-            // Trigger automated email (Placeholder for EmailJS/Cloud Function)
-            sendAutomatedEmail(updatedRes);
+            // Attempt to send automated email via configured service
+            const emailSent = await sendApprovalEmail({
+                to_email: updatedRes.email,
+                to_name: updatedRes.name,
+                date: updatedRes.date,
+                time: updatedRes.time,
+                guests: updatedRes.guests,
+                location: updatedRes.location,
+                table_marking: selectedTable.marking,
+                check_in_token: checkInToken,
+            });
 
             setSelectedResForApproval(null);
             setSelectedResForEmail(updatedRes);
 
             toast({
                 title: "Reservation Approved",
-                description: `Assigned to ${selectedTable.marking}. Confirmation details ready.`
+                description: emailSent
+                    ? `Assigned to ${selectedTable.marking}. Confirmation email sent to ${updatedRes.email}.`
+                    : `Assigned to ${selectedTable.marking}. Email service not responding — use the preview to send manually.`
             });
         } catch (error) {
             console.error("Approval error:", error);

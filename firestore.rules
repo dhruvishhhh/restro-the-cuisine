@@ -5,6 +5,9 @@ service cloud.firestore {
     match /locations/{doc} { allow read, write: if true; }
     match /tables/{doc} { allow read, write: if true; }
     match /timeSlots/{doc} { allow read, write: if true; }
+    match /table_slots/{doc} { allow read, write: if true; }
+    match /settings/{doc} { allow read: if true; allow write: if request.auth != null; }
+    match /siteConfig/{doc} { allow read: if true; allow write: if request.auth != null; }
     
     // Admin management rules
     match /authorized_admins/{doc} {
