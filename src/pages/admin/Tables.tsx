@@ -137,7 +137,12 @@ const Tables = () => {
     const [smartAlignment, setSmartAlignment] = useState(true);
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [activeLines, setActiveLines] = useState<any[]>([]);
+    const [localDragPos, setLocalDragPos] = useState<Record<string, { x: number; y: number }>>({});
 
+    // Refs for drag state to avoid stale closures
+    const dragStartRef = useRef<{ tableX: number; tableY: number; pointerX: number; pointerY: number } | null>(null);
+    const isDraggingRef = useRef(false);
+    const rafRef = useRef<number | null>(null);
     const navigate = useNavigate();
     const { toast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
