@@ -17,50 +17,59 @@ import AdminHeader from "@/components/AdminHeader";
 
 const timeSlots = generateTimeSlots();
 const GRID_SIZE = 2; // 2% grid snapping
+const SNAP_THRESHOLD = 1.5; // % - magnetic pull distance
+const SNAP_STRENGTH = 0.6; // 0-1, how hard the snap pulls (1 = instant snap)
+const EDGE_SNAP_THRESHOLD = 2.0; // % for edge alignment
 
-const TableWithChairs = ({ table, isReserved, editMode, onDragEnd, onDragStart, onDrag, isSelected, onSelect, isActiveDrag }: any) => {
+// Table dimensions in % of container for edge snapping
+const getTableDimensions = (shape: string): { w: number; h: number } => {
+    // These are approximate % sizes based on pixel sizes relative to container
+    switch (shape) {
+        case 'rect': case 'oval': return { w: 6, h: 5 };
+        case 't-shape': return { w: 6, h: 5.5 };
+        default: return { w: 5, h: 5 }; // square, circle
+    }
+};
+
+const TableWithChairs = ({ table, isReserved, editMode, isSelected, onSelect, isActiveDrag, localPos, onPointerDown }: any) => {
     const capacity = parseInt(table.capacity) || 2;
     const marking = table.marking || "T";
     const shape = table.shape || "square";
 
+    // Use localPos during drag, otherwise use stored position
+    const posX = localPos ? localPos.x : (table.x ?? 50);
+    const posY = localPos ? localPos.y : (table.y ?? 50);
+
     return (
-        <motion.div
-            drag={editMode}
-            dragMomentum={false}
-            dragElastic={0}
-            onDragStart={onDragStart}
-            onDrag={onDrag}
-            onDragEnd={onDragEnd}
-            dragPropagation={false}
-            layoutId={table.id} // Prevents visual jumps during state updates
+        <div
+            onPointerDown={editMode ? onPointerDown : undefined}
             style={{
-                left: `${table.x ?? 50}%`,
-                top: `${table.y ?? 50}%`,
+                left: `${posX}%`,
+                top: `${posY}%`,
                 position: 'absolute',
-                cursor: editMode ? 'grab' : 'pointer',
+                cursor: editMode ? (isActiveDrag ? 'grabbing' : 'grab') : 'pointer',
                 zIndex: isActiveDrag ? 100 : (isSelected ? 50 : 10),
-                transform: 'translate(-50%, -50%)',
+                transform: `translate(-50%, -50%) scale(${isActiveDrag ? 1.08 : 1})`,
                 width: shape === 'rect' || shape === 'oval' ? '120px' : '100px',
                 height: '100px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 pointerEvents: 'auto',
-                overflow: 'visible'
+                overflow: 'visible',
+                opacity: isActiveDrag ? 0.85 : 1,
+                transition: isActiveDrag ? 'transform 0.1s ease, opacity 0.1s ease' : 'left 0.15s ease, top 0.15s ease, transform 0.15s ease, opacity 0.15s ease',
+                willChange: isActiveDrag ? 'left, top' : 'auto',
             }}
             onClick={(e) => {
                 e.stopPropagation();
                 if (!editMode) onSelect(isSelected ? null : table.id);
             }}
             className="group"
-            whileDrag={{ scale: 1.1, opacity: 0.8, cursor: 'grabbing' }}
         >
-            {/* Visual alignment guides while dragging - replaced by full canvas lines */}
-
             <div className={`absolute inset-0 rounded-full border-2 transition-all ${isSelected ? 'border-accent ring-4 ring-accent/20' : 'border-transparent'}`} />
 
             <div className="relative pointer-events-none">
-                {/* Visual content */}
                 {[...Array(capacity)].map((_, i) => {
                     const angle = (i / capacity) * Math.PI * 2;
                     let distance = 38;
@@ -103,7 +112,7 @@ const TableWithChairs = ({ table, isReserved, editMode, onDragEnd, onDragStart, 
                     </div>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 };
 
@@ -128,10 +137,20 @@ const Tables = () => {
     const [smartAlignment, setSmartAlignment] = useState(true);
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [activeLines, setActiveLines] = useState<any[]>([]);
+    const [localDragPos, setLocalDragPos] = useState<Record<string, { x: number; y: number }>>({});
 
+    // Refs for drag state to avoid stale closures
+    const dragStartRef = useRef<{ tableX: number; tableY: number; pointerX: number; pointerY: number } | null>(null);
+    const isDraggingRef = useRef(false);
+    const rafRef = useRef<number | null>(null);
+    const lastDragPosRef = useRef<{ x: number; y: number } | null>(null);
     const navigate = useNavigate();
     const { toast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
+    const zoomRef = useRef(zoom);
+    zoomRef.current = zoom;
+    const offsetRef = useRef(offset);
+    offsetRef.current = offset;
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -154,8 +173,9 @@ const Tables = () => {
 
         const q = query(collection(db, "tables"));
         const tableSub = onSnapshot(q, (snapshot) => {
+            // Don't update tables from Firestore while dragging - prevents "jump" reset
+            if (isDraggingRef.current) return;
             const allTables = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
-            // Sort in memory to avoid index requirement
             allTables.sort((a: any, b: any) => {
                 if (a.location !== b.location) return a.location.localeCompare(b.location);
                 return a.marking.localeCompare(b.marking);
@@ -246,99 +266,227 @@ const Tables = () => {
         }
     };
 
-    const handleDragMove = (id: string, info: any) => {
-        if (!smartAlignment || !containerRef.current) return;
+    // ==========================================
+    // PRECISION DRAG ENGINE (Pointer-based)
+    // ==========================================
 
-        const containerRect = containerRef.current.getBoundingClientRect();
-
-        // Current table center (absolute canvas % coordinates)
-        const currentX = ((info.point.x - containerRect.left - offset.x) / zoom / containerRect.width) * 100;
-        const currentY = ((info.point.y - containerRect.top - offset.y) / zoom / containerRect.height) * 100;
-
-        const currentTable = tables.find(t => t.id === id);
-        if (!currentTable) return;
-
-        const otherTables = tables.filter(t => t.id !== id && (t.location?.trim().toLowerCase() === currentTable.location?.trim().toLowerCase()));
-        const lines: any[] = [];
-        const THRESHOLD = 2.0; // Increased threshold for easier snapping
-
-        otherTables.forEach(other => {
-            const ox = other.x ?? 50;
-            const oy = other.y ?? 50;
-
-            // 1. Center Alignment (X-axis)
-            if (Math.abs(currentX - ox) < THRESHOLD) {
-                lines.push({ x1: ox, y1: -100, x2: ox, y2: 200, type: 'vertical', color: '#C5A059' });
-            }
-            // 2. Center Alignment (Y-axis)
-            if (Math.abs(currentY - oy) < THRESHOLD) {
-                lines.push({ x1: -100, y1: oy, x2: 200, y2: oy, type: 'horizontal', color: '#C5A059' });
-            }
-
-            // 3. Edge Alignment (Left/Top) - Optional but good for pro tools
-            // (Using 10% width/height as estimated table size for edge checks)
-            const TABLE_H_SIZE = 4; // half size
-            if (Math.abs((currentX - TABLE_H_SIZE) - (ox - TABLE_H_SIZE)) < THRESHOLD) {
-                // Already covered by center check if sizes are same, but here for robustness
-            }
-        });
-
-        setActiveLines(lines);
+    const clientToCanvas = (clientX: number, clientY: number): { x: number; y: number } | null => {
+        const container = containerRef.current;
+        if (!container) return null;
+        const rect = container.getBoundingClientRect();
+        // Client → container-local → undo pan → undo zoom → to percentage
+        const px = (clientX - rect.left - offset.x) / zoom;
+        const py = (clientY - rect.top - offset.y) / zoom;
+        return {
+            x: (px / rect.width) * 100,
+            y: (py / rect.height) * 100,
+        };
     };
 
-    const handleTableDrag = async (id: string, info: any) => {
-        if (!editMode || !containerRef.current) return;
+    const computeSnap = (rawX: number, rawY: number, dragTableId: string): { x: number; y: number; lines: any[] } => {
+        let x = rawX;
+        let y = rawY;
+        const lines: any[] = [];
 
-        try {
-            const containerRect = containerRef.current.getBoundingClientRect();
+        const currentTable = tables.find(t => t.id === dragTableId);
+        if (!currentTable) return { x, y, lines };
 
-            // Calculate absolute position within the container
-            let x = ((info.point.x - containerRect.left - offset.x) / zoom / containerRect.width) * 100;
-            let y = ((info.point.y - containerRect.top - offset.y) / zoom / containerRect.height) * 100;
+        const currentDims = getTableDimensions(currentTable.shape || 'square');
 
-            // Constrain to reasonable bounds (0-100%)
-            x = Math.max(0, Math.min(100, x));
-            y = Math.max(0, Math.min(100, y));
+        if (smartAlignment) {
+            const otherTables = tables.filter(t =>
+                t.id !== dragTableId &&
+                t.location?.trim().toLowerCase() === currentTable.location?.trim().toLowerCase()
+            );
 
-            const currentTable = tables.find(t => t.id === id);
+            let snappedX = false;
+            let snappedY = false;
+            let bestDx = Infinity;
+            let bestDy = Infinity;
 
-            // Smart Magnetic Snapping (Pro-Level: Center-to-Center)
-            if (smartAlignment && currentTable) {
-                const ALIGN_THRESHOLD = 1.8; // Stronger "magnetic" pull
-                const otherTables = tables.filter(t => t.id !== id && (t.location?.trim().toLowerCase() === currentTable.location?.trim().toLowerCase()));
+            for (const other of otherTables) {
+                const ox = other.x ?? 50;
+                const oy = other.y ?? 50;
+                const otherDims = getTableDimensions(other.shape || 'square');
 
-                otherTables.forEach(other => {
-                    const ox = other.x ?? 50;
-                    const oy = other.y ?? 50;
+                // === Center-to-Center ===
+                const dxCenter = Math.abs(x - ox);
+                if (dxCenter < SNAP_THRESHOLD && dxCenter < bestDx) {
+                    bestDx = dxCenter;
+                    x = ox;
+                    snappedX = true;
+                }
+                const dyCenter = Math.abs(y - oy);
+                if (dyCenter < SNAP_THRESHOLD && dyCenter < bestDy) {
+                    bestDy = dyCenter;
+                    y = oy;
+                    snappedY = true;
+                }
 
-                    // Snapping centers (this guarantees the straight lines from the reference)
-                    if (Math.abs(x - ox) < ALIGN_THRESHOLD) x = ox;
-                    if (Math.abs(y - oy) < ALIGN_THRESHOLD) y = oy;
+                // === Edge-to-Edge (left-to-left, right-to-right, left-to-right, etc.) ===
+                const myLeft = x - currentDims.w / 2;
+                const myRight = x + currentDims.w / 2;
+                const myTop = y - currentDims.h / 2;
+                const myBottom = y + currentDims.h / 2;
 
-                    // Edge snapping logic can be added here if tables have different widths
-                });
+                const oLeft = ox - otherDims.w / 2;
+                const oRight = ox + otherDims.w / 2;
+                const oTop = oy - otherDims.h / 2;
+                const oBottom = oy + otherDims.h / 2;
+
+                // Left edge alignments
+                const edgePairsX = [
+                    { from: myLeft, to: oLeft, offset: currentDims.w / 2 },    // left-to-left
+                    { from: myRight, to: oRight, offset: -currentDims.w / 2 }, // right-to-right
+                    { from: myLeft, to: oRight, offset: currentDims.w / 2 },   // left-to-right (flush)
+                    { from: myRight, to: oLeft, offset: -currentDims.w / 2 },  // right-to-left (flush)
+                ];
+                for (const pair of edgePairsX) {
+                    const d = Math.abs(pair.from - pair.to);
+                    if (d < EDGE_SNAP_THRESHOLD && d < bestDx) {
+                        bestDx = d;
+                        x = pair.to + pair.offset;
+                        snappedX = true;
+                    }
+                }
+
+                const edgePairsY = [
+                    { from: myTop, to: oTop, offset: currentDims.h / 2 },
+                    { from: myBottom, to: oBottom, offset: -currentDims.h / 2 },
+                    { from: myTop, to: oBottom, offset: currentDims.h / 2 },
+                    { from: myBottom, to: oTop, offset: -currentDims.h / 2 },
+                ];
+                for (const pair of edgePairsY) {
+                    const d = Math.abs(pair.from - pair.to);
+                    if (d < EDGE_SNAP_THRESHOLD && d < bestDy) {
+                        bestDy = d;
+                        y = pair.to + pair.offset;
+                        snappedY = true;
+                    }
+                }
             }
 
-            // Snap to Grid (2% grid)
-            if (snapToGrid) {
-                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
-                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+            // Build guide lines for snapped axes
+            if (snappedX) {
+                lines.push({ x1: x, y1: 0, x2: x, y2: 100, type: 'vertical', color: '#C5A059' });
             }
+            if (snappedY) {
+                lines.push({ x1: 0, y1: y, x2: 100, y2: y, type: 'horizontal', color: '#C5A059' });
+            }
+        }
 
-            await updateDoc(doc(db, "tables", id), { x, y });
-        } catch (error) {
-            console.error("Table drag update failed:", error);
-            toast({
-                variant: "destructive",
-                title: "Layout Error",
-                description: "Failed to save table position."
+        // Grid snap (after alignment so grid doesn't override magnetic snapping)
+        if (snapToGrid) {
+            x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+            y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+        }
+
+        // Clamp
+        x = Math.max(2, Math.min(98, x));
+        y = Math.max(2, Math.min(98, y));
+
+        return { x, y, lines };
+    };
+
+    const handlePointerDown = (tableId: string, e: React.PointerEvent) => {
+        if (!editMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        const table = tables.find(t => t.id === tableId);
+        if (!table) return;
+
+        isDraggingRef.current = true;
+        dragStartRef.current = {
+            tableX: table.x ?? 50,
+            tableY: table.y ?? 50,
+            pointerX: e.clientX,
+            pointerY: e.clientY,
+        };
+        setActiveDragId(tableId);
+
+        const target = e.currentTarget as HTMLElement;
+        target.setPointerCapture(e.pointerId);
+
+        const handlePointerMove = (ev: PointerEvent) => {
+            if (!dragStartRef.current || !containerRef.current) return;
+
+            // Cancel any pending RAF to avoid double updates
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+            rafRef.current = requestAnimationFrame(() => {
+                if (!dragStartRef.current || !containerRef.current) return;
+                const rect = containerRef.current.getBoundingClientRect();
+
+                // Delta in pixels → delta in canvas %
+                const deltaPixelX = ev.clientX - dragStartRef.current.pointerX;
+                const deltaPixelY = ev.clientY - dragStartRef.current.pointerY;
+
+                // Convert pixel delta to % delta, accounting for zoom
+                const deltaPctX = (deltaPixelX / zoomRef.current / rect.width) * 100;
+                const deltaPctY = (deltaPixelY / zoomRef.current / rect.height) * 100;
+
+                const rawX = dragStartRef.current.tableX + deltaPctX;
+                const rawY = dragStartRef.current.tableY + deltaPctY;
+
+                const { x, y, lines } = computeSnap(rawX, rawY, tableId);
+
+                setLocalDragPos(prev => ({ ...prev, [tableId]: { x, y } }));
+                lastDragPosRef.current = { x, y };
+                setActiveLines(lines);
             });
-        } finally {
+        };
+
+        const handlePointerUp = async () => {
+            target.removeEventListener('pointermove', handlePointerMove);
+            target.removeEventListener('pointerup', handlePointerUp);
+
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+            const finalPos = lastDragPosRef.current || { x: dragStartRef.current?.tableX ?? 50, y: dragStartRef.current?.tableY ?? 50 };
+
+            isDraggingRef.current = false;
+            dragStartRef.current = null;
+            lastDragPosRef.current = null;
             setActiveDragId(null);
             setActiveLines([]);
-        }
+
+            try {
+                let fx = finalPos.x;
+                let fy = finalPos.y;
+
+                // Persist to Firestore
+                await updateDoc(doc(db, "tables", tableId), { x: fx, y: fy });
+
+                // Update local tables state immediately to prevent visual jump
+                setTables(prev => prev.map(t => t.id === tableId ? { ...t, x: fx, y: fy } : t));
+            } catch (error) {
+                console.error("Table drag update failed:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Layout Error",
+                    description: "Failed to save table position."
+                });
+            } finally {
+                // Clear local drag position
+                setLocalDragPos(prev => {
+                    const next = { ...prev };
+                    delete next[tableId];
+                    return next;
+                });
+            }
+        };
+
+        target.addEventListener('pointermove', handlePointerMove);
+        target.addEventListener('pointerup', handlePointerUp);
     };
 
+    // Cleanup RAF on unmount
+    useEffect(() => {
+        return () => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        };
+    }, []);
 
     const lastPinchDistance = useRef<number | null>(null);
 
@@ -373,7 +521,7 @@ const Tables = () => {
     };
 
     const handlePan = (e: any, info: any) => {
-        // Panning is allowed in both modes as requested
+        if (isDraggingRef.current) return; // Don't pan while dragging a table
         setOffset(prev => ({
             x: prev.x + info.delta.x,
             y: prev.y + info.delta.y
@@ -773,9 +921,8 @@ const Tables = () => {
                                                         isSelected={selectedTableId === table.id}
                                                         onSelect={setSelectedTableId}
                                                         isActiveDrag={activeDragId === table.id}
-                                                        onDragStart={() => setActiveDragId(table.id)}
-                                                        onDrag={(e: any, info: any) => handleDragMove(table.id, info)}
-                                                        onDragEnd={(e: any, info: any) => handleTableDrag(table.id, info)}
+                                                        localPos={localDragPos[table.id]}
+                                                        onPointerDown={(e: React.PointerEvent) => handlePointerDown(table.id, e)}
                                                     />
                                                 );
                                             })}
