@@ -89,6 +89,17 @@ const Reservations = () => {
         };
     }, [navigate]);
 
+    const sendAutomatedEmail = async (res: any) => {
+        // This is a placeholder for an automated email service like EmailJS or a Cloud Function.
+        // It should contain the reservation details and the check-in token for the QR code.
+        console.log("Automated Email Triggered for:", res.email, {
+            token: res.checkInToken,
+            details: `${res.name}, ${res.date} at ${res.time}, Table ${res.tableMarking}`
+        });
+
+        // Example implementation with EmailJS would go here
+    };
+
     const openApprovalModal = async (reservation: any) => {
         try {
             const tablesSnap = await getDocs(collection(db, "tables"));
@@ -149,6 +160,9 @@ const Reservations = () => {
             });
 
             const updatedRes = { ...selectedResForApproval, status: 'approved', tableMarking: selectedTable.marking, checkInToken };
+
+            // Trigger automated email (Placeholder for EmailJS/Cloud Function)
+            sendAutomatedEmail(updatedRes);
 
             setSelectedResForApproval(null);
             setSelectedResForEmail(updatedRes);
