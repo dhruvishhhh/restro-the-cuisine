@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, setDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, FileSpreadsheet, FileJson, Table as TableIcon, Calendar } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Download, Table as TableIcon, Calendar, Power, ShieldOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminDataCenter = () => {
