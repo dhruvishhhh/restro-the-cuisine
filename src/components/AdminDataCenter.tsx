@@ -83,19 +83,45 @@ const AdminDataCenter = () => {
     };
 
     return (
-        <Card className="border-border bg-card">
-            <CardHeader>
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-accent/10 rounded-lg">
-                        <Download className="w-5 h-5 text-accent" />
+        <div className="space-y-6">
+            {/* Master Booking Toggle */}
+            <Card className={`border-border bg-card overflow-hidden transition-all ${isPaused ? 'ring-1 ring-destructive/30' : 'ring-1 ring-accent/20'}`}>
+                <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-lg ${isPaused ? 'bg-destructive/10' : 'bg-accent/10'}`}>
+                                {isPaused ? <ShieldOff className="w-5 h-5 text-destructive" /> : <Power className="w-5 h-5 text-accent" />}
+                            </div>
+                            <div>
+                                <CardTitle className="text-base">Booking Engine</CardTitle>
+                                <CardDescription className="text-xs">
+                                    {isPaused ? "Public reservations are disabled." : "Accepting new reservation requests."}
+                                </CardDescription>
+                            </div>
+                        </div>
+                        <Switch
+                            checked={!isPaused}
+                            onCheckedChange={toggleBookingStatus}
+                            disabled={isTogglingPause}
+                        />
                     </div>
-                    <div>
-                        <CardTitle>Data Export Center</CardTitle>
-                        <CardDescription>Download your sanctuary data for offline management.</CardDescription>
+                </CardHeader>
+            </Card>
+
+            {/* Data Export */}
+            <Card className="border-border bg-card">
+                <CardHeader>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-accent/10 rounded-lg">
+                            <Download className="w-5 h-5 text-accent" />
+                        </div>
+                        <div>
+                            <CardTitle>Data Export Center</CardTitle>
+                            <CardDescription>Download your sanctuary data for offline management.</CardDescription>
+                        </div>
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent className="grid sm:grid-cols-2 gap-4">
+                </CardHeader>
+                <CardContent className="grid sm:grid-cols-2 gap-4">
                 <Button
                     variant="outline"
                     className="h-24 flex flex-col gap-2 border-border hover:border-accent/40 hover:bg-accent/5 group transition-all"
