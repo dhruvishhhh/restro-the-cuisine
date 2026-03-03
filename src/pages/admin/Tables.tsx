@@ -17,50 +17,59 @@ import AdminHeader from "@/components/AdminHeader";
 
 const timeSlots = generateTimeSlots();
 const GRID_SIZE = 2; // 2% grid snapping
+const SNAP_THRESHOLD = 1.5; // % - magnetic pull distance
+const SNAP_STRENGTH = 0.6; // 0-1, how hard the snap pulls (1 = instant snap)
+const EDGE_SNAP_THRESHOLD = 2.0; // % for edge alignment
 
-const TableWithChairs = ({ table, isReserved, editMode, onDragEnd, onDragStart, onDrag, isSelected, onSelect, isActiveDrag }: any) => {
+// Table dimensions in % of container for edge snapping
+const getTableDimensions = (shape: string): { w: number; h: number } => {
+    // These are approximate % sizes based on pixel sizes relative to container
+    switch (shape) {
+        case 'rect': case 'oval': return { w: 6, h: 5 };
+        case 't-shape': return { w: 6, h: 5.5 };
+        default: return { w: 5, h: 5 }; // square, circle
+    }
+};
+
+const TableWithChairs = ({ table, isReserved, editMode, isSelected, onSelect, isActiveDrag, localPos, onPointerDown }: any) => {
     const capacity = parseInt(table.capacity) || 2;
     const marking = table.marking || "T";
     const shape = table.shape || "square";
 
+    // Use localPos during drag, otherwise use stored position
+    const posX = localPos ? localPos.x : (table.x ?? 50);
+    const posY = localPos ? localPos.y : (table.y ?? 50);
+
     return (
-        <motion.div
-            drag={editMode}
-            dragMomentum={false}
-            dragElastic={0}
-            onDragStart={onDragStart}
-            onDrag={onDrag}
-            onDragEnd={onDragEnd}
-            dragPropagation={false}
-            layoutId={table.id} // Prevents visual jumps during state updates
+        <div
+            onPointerDown={editMode ? onPointerDown : undefined}
             style={{
-                left: `${table.x ?? 50}%`,
-                top: `${table.y ?? 50}%`,
+                left: `${posX}%`,
+                top: `${posY}%`,
                 position: 'absolute',
-                cursor: editMode ? 'grab' : 'pointer',
+                cursor: editMode ? (isActiveDrag ? 'grabbing' : 'grab') : 'pointer',
                 zIndex: isActiveDrag ? 100 : (isSelected ? 50 : 10),
-                transform: 'translate(-50%, -50%)',
+                transform: `translate(-50%, -50%) scale(${isActiveDrag ? 1.08 : 1})`,
                 width: shape === 'rect' || shape === 'oval' ? '120px' : '100px',
                 height: '100px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 pointerEvents: 'auto',
-                overflow: 'visible'
+                overflow: 'visible',
+                opacity: isActiveDrag ? 0.85 : 1,
+                transition: isActiveDrag ? 'transform 0.1s ease, opacity 0.1s ease' : 'left 0.15s ease, top 0.15s ease, transform 0.15s ease, opacity 0.15s ease',
+                willChange: isActiveDrag ? 'left, top' : 'auto',
             }}
             onClick={(e) => {
                 e.stopPropagation();
                 if (!editMode) onSelect(isSelected ? null : table.id);
             }}
             className="group"
-            whileDrag={{ scale: 1.1, opacity: 0.8, cursor: 'grabbing' }}
         >
-            {/* Visual alignment guides while dragging - replaced by full canvas lines */}
-
             <div className={`absolute inset-0 rounded-full border-2 transition-all ${isSelected ? 'border-accent ring-4 ring-accent/20' : 'border-transparent'}`} />
 
             <div className="relative pointer-events-none">
-                {/* Visual content */}
                 {[...Array(capacity)].map((_, i) => {
                     const angle = (i / capacity) * Math.PI * 2;
                     let distance = 38;
@@ -103,7 +112,7 @@ const TableWithChairs = ({ table, isReserved, editMode, onDragEnd, onDragStart, 
                     </div>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 };
 

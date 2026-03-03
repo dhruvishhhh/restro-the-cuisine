@@ -11,7 +11,6 @@ import Tables from "./pages/admin/Tables";
 import Reservations from "./pages/admin/Reservations";
 import AdminLocations from "./pages/admin/Locations";
 import ScanCheckIn from "./pages/admin/ScanCheckIn";
-import Admins from "./pages/admin/Admins";
 import Contact from "./pages/Contact";
 import MenuPage from "./pages/Menu";
 import ExperiencePage from "./pages/Experience";
