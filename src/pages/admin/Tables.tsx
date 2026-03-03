@@ -439,18 +439,15 @@ const Tables = () => {
 
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-            const finalPos = localDragPos[tableId] || { x: dragStartRef.current?.tableX ?? 50, y: dragStartRef.current?.tableY ?? 50 };
+            const finalPos = lastDragPosRef.current || { x: dragStartRef.current?.tableX ?? 50, y: dragStartRef.current?.tableY ?? 50 };
 
             isDraggingRef.current = false;
             dragStartRef.current = null;
+            lastDragPosRef.current = null;
             setActiveDragId(null);
             setActiveLines([]);
 
-            // Read from DOM-latest localDragPos
-            // We need to get the actual final position from the last RAF update
             try {
-                // Get the element's current style to read the final position
-                const currentLocalPos = document.querySelector(`[data-table-id="${tableId}"]`);
                 let fx = finalPos.x;
                 let fy = finalPos.y;
 
