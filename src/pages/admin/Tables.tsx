@@ -143,6 +143,7 @@ const Tables = () => {
     const dragStartRef = useRef<{ tableX: number; tableY: number; pointerX: number; pointerY: number } | null>(null);
     const isDraggingRef = useRef(false);
     const rafRef = useRef<number | null>(null);
+    const lastDragPosRef = useRef<{ x: number; y: number } | null>(null);
     const navigate = useNavigate();
     const { toast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
