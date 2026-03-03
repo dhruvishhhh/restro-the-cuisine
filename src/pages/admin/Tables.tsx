@@ -423,8 +423,8 @@ const Tables = () => {
                 const deltaPixelY = ev.clientY - dragStartRef.current.pointerY;
 
                 // Convert pixel delta to % delta, accounting for zoom
-                const deltaPctX = (deltaPixelX / zoom / rect.width) * 100;
-                const deltaPctY = (deltaPixelY / zoom / rect.height) * 100;
+                const deltaPctX = (deltaPixelX / zoomRef.current / rect.width) * 100;
+                const deltaPctY = (deltaPixelY / zoomRef.current / rect.height) * 100;
 
                 const rawX = dragStartRef.current.tableX + deltaPctX;
                 const rawY = dragStartRef.current.tableY + deltaPctY;
