@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, Move, Save, Edit2, Grid, Layers } from "lucide-react";
+import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, Move, Save, Edit2, Grid, Layers, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { format, isSameDay } from "date-fns";
-import { generateTimeSlots, getPreviousSlot, getCurrentSlot } from "@/lib/timeSlots";
+import { generateTimeSlots, getPreviousSlot, getCurrentSlot, isSlotInRange } from "@/lib/timeSlots";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 
@@ -92,11 +92,11 @@ const TableWithChairs = ({ table, isReserved, editMode, isSelected, onSelect, is
                 })}
 
                 <div className={`pointer-events-auto flex flex-col items-center justify-center shadow-xl border-2 transition-all duration-500 ${shape === 'circle' ? 'rounded-full w-14 h-14' :
-                        shape === 'oval' ? 'rounded-[2rem] w-22 h-14' :
-                            shape === 't-shape' ? 'rounded-lg w-22 h-20' :
-                                shape === 'rect' ? 'rounded-lg w-22 h-14' :
-                                    'rounded-xl w-14 h-14'
-                    } ${table.status === 'occupied' ? 'bg-terracotta/20 border-terracotta/60 text-terracotta' :
+                    shape === 'oval' ? 'rounded-[2rem] w-22 h-14' :
+                        shape === 't-shape' ? 'rounded-lg w-22 h-20' :
+                            shape === 'rect' ? 'rounded-lg w-22 h-14' :
+                                'rounded-xl w-14 h-14'
+                    } ${table.status === 'occupied' ? 'bg-emerald-100/30 border-emerald-500/60 text-emerald-700' :
                         table.status === 'cleaning' ? 'bg-blue-100/50 border-blue-400 text-blue-800' :
                             isReserved ? 'bg-amber-100/30 border-gold/60 text-gold' :
                                 'bg-white/95 border-gold/40 text-primary'
@@ -680,6 +680,47 @@ const Tables = () => {
                                     ))}
                                 </select>
                             </div>
+                            {/* CSV Download */}
+                            <div className="flex flex-col gap-1.5">
+                                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">&nbsp;</Label>
+                                <Button
+                                    variant="outline"
+                                    className="h-10 gap-2 text-xs font-bold"
+                                    onClick={() => {
+                                        if (filteredTables.length === 0) {
+                                            toast({ variant: "destructive", title: "No Data", description: "No tables to export." });
+                                            return;
+                                        }
+                                        const columns = [
+                                            { key: "marking", label: "Marking" },
+                                            { key: "location", label: "Location" },
+                                            { key: "capacity", label: "Capacity" },
+                                            { key: "shape", label: "Shape" },
+                                        ];
+                                        const headers = columns.map(c => c.label).join(",");
+                                        const rows = filteredTables.map(item =>
+                                            columns.map(col => {
+                                                const val = (item as any)[col.key] ?? "";
+                                                return `"${String(val).replace(/"/g, '""')}"`;
+                                            }).join(",")
+                                        );
+                                        const csv = [headers, ...rows].join("\n");
+                                        const bom = "\uFEFF";
+                                        const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+                                        const url = URL.createObjectURL(blob);
+                                        const link = document.createElement("a");
+                                        const locName = selectedLocation === "all" ? "AllLocations" : selectedLocation.replace(/[^a-zA-Z0-9]/g, '');
+                                        const fileName = `${locName}_${viewDate}.csv`;
+                                        link.href = url;
+                                        link.download = fileName;
+                                        link.click();
+                                        URL.revokeObjectURL(url);
+                                        toast({ title: "Export Complete", description: `Downloaded as ${fileName}` });
+                                    }}
+                                >
+                                    <Download className="w-4 h-4" /> CSV
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -890,11 +931,10 @@ const Tables = () => {
                                         {/* Tables Layer: Higher z-index than Pan Layer */}
                                         <div className="absolute inset-0 z-10" style={{ pointerEvents: 'none' }}>
                                             {filteredTables.map((table, index) => {
-                                                const prevSlot = getPreviousSlot(viewSlot);
                                                 const reservation = reservations.find(res =>
                                                     res.tableId === table.id &&
                                                     res.date === viewDate &&
-                                                    (res.time === viewSlot || res.time === prevSlot)
+                                                    isSlotInRange(viewSlot, res.time, 90)
                                                 );
 
                                                 const isArrived = reservation?.status === 'arrived';
@@ -983,11 +1023,10 @@ const Tables = () => {
                                 const selectedTable = tables.find(t => t.id === selectedTableId);
                                 if (!selectedTable) return null;
 
-                                const prevSlot = getPreviousSlot(viewSlot);
                                 const currentReservation = reservations.find(res =>
                                     res.tableId === selectedTableId &&
                                     res.date === viewDate &&
-                                    (res.time === viewSlot || res.time === prevSlot)
+                                    isSlotInRange(viewSlot, res.time, 90)
                                 );
 
                                 const availableRequests = reservations.filter(res =>
@@ -1146,7 +1185,7 @@ const Tables = () => {
                                                 return (
                                                     <div key={table.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-background rounded-xl border border-border gap-4 hover:shadow-md transition-all">
                                                         <div className="flex items-center gap-4">
-                                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold shadow-inner ${finalStatus === 'occupied' ? "bg-terracotta/10 text-terracotta" : isReserved ? "bg-amber-100 text-gold" : "bg-sage/10 text-sage"}`}>
+                                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold shadow-inner ${finalStatus === 'occupied' ? "bg-emerald-100 text-emerald-700" : isReserved ? "bg-amber-100 text-gold" : "bg-sage/10 text-sage"}`}>
                                                                 {table.marking ? table.marking[0].toUpperCase() : "T"}
                                                             </div>
                                                             <div>
@@ -1161,7 +1200,7 @@ const Tables = () => {
                                                         </div>
 
                                                         <div className="flex items-center justify-end gap-3">
-                                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border shadow-sm ${finalStatus === 'occupied' ? "bg-terracotta/10 text-terracotta border-terracotta/20" : isReserved ? "bg-amber-50 text-gold border-gold/20" :
+                                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border shadow-sm ${finalStatus === 'occupied' ? "bg-emerald-100 text-emerald-700 border-emerald-200" : isReserved ? "bg-amber-50 text-gold border-gold/20" :
                                                                 "bg-muted/30 text-muted-foreground border-border"
                                                                 }`}>
                                                                 {statusLabel === 'A' ? "Active" : statusLabel === 'R' ? "Reserved" : "Available"}

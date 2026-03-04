@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 
-const HeroSection = () => {
+const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
   return (
-    <section className="relative h-screen w-full overflow-hidden" id="hero">
+    <section className={`relative h-[100dvh] w-full overflow-hidden ${topOffset ? 'pt-8' : ''}`} id="hero">
       {/* Background Image with slow zoom */}
       <div className="absolute inset-0 animate-slow-zoom">
         <img
@@ -17,17 +17,17 @@ const HeroSection = () => {
       <div className="absolute inset-0 overlay-gradient" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.3 }}
-          className="mb-6"
+          className="mb-4 md:mb-6"
         >
-          <h2 className="text-sm md:text-base uppercase tracking-[0.4em] font-sans font-medium text-gold/80 mb-8">
+          <h2 className="text-xs md:text-base uppercase tracking-[0.4em] font-sans font-medium text-gold/80 mb-4 md:mb-8">
             Est. 2024
           </h2>
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium text-primary-foreground gold-glow tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl font-medium text-primary-foreground gold-glow tracking-tight leading-[1.1]">
             House of
             <br />
             Earth Monk
@@ -38,7 +38,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="font-serif italic text-lg md:text-xl text-primary-foreground/70 mb-12 max-w-md"
+          className="font-serif italic text-base md:text-xl text-primary-foreground/70 mb-8 md:mb-12 max-w-md"
         >
           Rooted in Earth. Crafted with Soul.
         </motion.p>
@@ -48,7 +48,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.5 }}
-          className="px-10 py-4 border border-gold/60 text-gold uppercase tracking-[0.2em] text-sm font-sans font-medium hover:bg-gold/10 transition-all duration-500"
+          className="px-8 md:px-10 py-3.5 md:py-4 border border-gold/60 text-gold uppercase tracking-[0.2em] text-xs md:text-sm font-sans font-medium hover:bg-gold/10 transition-all duration-500"
         >
           Book A Table
         </motion.a>
@@ -59,10 +59,10 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-xs uppercase tracking-[0.3em] text-primary-foreground/40 font-sans">Scroll</span>
-        <div className="w-px h-8 bg-gradient-to-b from-gold/40 to-transparent" />
+        <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary-foreground/40 font-sans">Scroll</span>
+        <div className="w-px h-6 md:h-8 bg-gradient-to-b from-gold/40 to-transparent" />
       </motion.div>
     </section>
   );

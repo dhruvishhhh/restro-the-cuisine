@@ -33,15 +33,15 @@ const Index = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-accent text-accent-foreground py-2 px-4 text-center text-xs font-sans tracking-widest uppercase relative z-[1001] border-b border-accent-foreground/10"
+            className="fixed top-0 left-0 right-0 z-[60] bg-accent text-accent-foreground py-2 px-4 text-center text-xs font-sans tracking-widest uppercase border-b border-accent-foreground/10"
           >
             {requirement}
           </motion.div>
         )}
       </AnimatePresence>
-      <Header />
+      <Header topOffset={requirement ? true : false} />
       <main>
-        <HeroSection />
+        <HeroSection topOffset={requirement ? true : false} />
         <AboutSection showViewMore={true} />
         <ExperienceSection showViewMore={true} />
         <MenuPreview showViewMore={true} />

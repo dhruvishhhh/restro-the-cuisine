@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs, updateDoc, doc, setDoc } from "firebase/firestore";
@@ -7,6 +7,7 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { formatToAmPm } from "@/lib/timeSlots";
 import {
     LayoutDashboard,
     Calendar,
@@ -25,9 +26,11 @@ import AdminHeader from "@/components/AdminHeader";
 const ScanCheckIn = () => {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [isScanning, setIsScanning] = useState(true);
     const [scannedResult, setScannedResult] = useState<any>(null);
     const [isCheckingIn, setIsCheckingIn] = useState(false);
+    const [scannerReady, setScannerReady] = useState(false);
+    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const hasProcessed = useRef(false); // prevent double-scan
 
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -41,30 +44,59 @@ const ScanCheckIn = () => {
                 navigate("/admin/login");
             }
         });
-
-        const scanner = new Html5QrcodeScanner(
-            "reader",
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            /* verbose= */ false
-        );
-
-        scanner.render(onScanSuccess, onScanFailure);
-
-        function onScanSuccess(decodedText: string) {
-            scanner.clear();
-            setIsScanning(false);
-            handleVerifyToken(decodedText);
-        }
-
-        function onScanFailure(error: any) {
-            // Silence noise
-        }
-
-        return () => {
-            unsubscribeAuth();
-            scanner.clear().catch(err => console.error("Scanner cleanup error", err));
-        };
+        return () => unsubscribeAuth();
     }, [navigate]);
+
+    // Initialize scanner only after loading = false (DOM is ready)
+    const initScanner = useCallback(() => {
+        // Clean up any existing scanner
+        if (scannerRef.current) {
+            scannerRef.current.clear().catch(() => { });
+            scannerRef.current = null;
+        }
+
+        hasProcessed.current = false;
+        setScannerReady(true);
+
+        // Small delay to let React render the #reader div
+        setTimeout(() => {
+            const readerEl = document.getElementById("reader");
+            if (!readerEl) return;
+
+            const scanner = new Html5QrcodeScanner(
+                "reader",
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                /* verbose= */ false
+            );
+
+            scanner.render(
+                (decodedText: string) => {
+                    if (hasProcessed.current) return; // prevent double processing
+                    hasProcessed.current = true;
+                    scanner.clear().catch(() => { });
+                    scannerRef.current = null;
+                    setScannerReady(false);
+                    handleVerifyToken(decodedText);
+                },
+                () => { } // silence scan failures
+            );
+
+            scannerRef.current = scanner;
+        }, 300);
+    }, []);
+
+    // Start scanner once user is loaded
+    useEffect(() => {
+        if (!loading && !scannedResult) {
+            initScanner();
+        }
+        return () => {
+            if (scannerRef.current) {
+                scannerRef.current.clear().catch(() => { });
+                scannerRef.current = null;
+            }
+        };
+    }, [loading, scannedResult, initScanner]);
 
     const handleVerifyToken = async (token: string) => {
         setIsCheckingIn(true);
@@ -78,7 +110,8 @@ const ScanCheckIn = () => {
                     title: "Invalid QR Code",
                     description: "This code does not match any approved reservation."
                 });
-                setIsScanning(true);
+                // Re-init scanner to try again
+                setTimeout(() => initScanner(), 500);
                 return;
             }
 
@@ -96,13 +129,13 @@ const ScanCheckIn = () => {
                     title: "Reservation Not Approved",
                     description: `This reservation is currently ${reservation.status}.`
                 });
-                setIsScanning(true);
+                setTimeout(() => initScanner(), 500);
             } else {
                 setScannedResult(reservation);
             }
         } catch (error) {
             toast({ variant: "destructive", title: "Error", description: "Verification failed." });
-            setIsScanning(true);
+            setTimeout(() => initScanner(), 500);
         } finally {
             setIsCheckingIn(false);
         }
@@ -120,12 +153,10 @@ const ScanCheckIn = () => {
 
             // 2. Update Linked Table Status (global + slot-specific)
             if (scannedResult.tableId) {
-                // Global status
                 await updateDoc(doc(db, "tables", scannedResult.tableId), {
                     status: "occupied"
                 });
 
-                // Update table_slots for this specific date/time
                 const slotDocId = `${scannedResult.tableId}_${scannedResult.date}_${scannedResult.time}`;
                 await setDoc(doc(db, "table_slots", slotDocId), {
                     tableId: scannedResult.tableId,
@@ -137,19 +168,21 @@ const ScanCheckIn = () => {
             }
 
             toast({
-                title: "Check-in Successful",
-                description: `${scannedResult.name} has been checked in and Table ${scannedResult.tableMarking || "assigned seat"} is now Active.`
+                title: "Check-in Successful ✓",
+                description: `${scannedResult.name} checked in → Table ${scannedResult.tableMarking || "assigned seat"} is now Active.`
             });
 
+            // Reset — scanner will auto-reinit via useEffect
             setScannedResult(null);
-            setIsScanning(true);
-            // Restarting scanner after state change is handled by reload or manual button
-            window.location.reload();
         } catch (error) {
             toast({ variant: "destructive", title: "Error", description: "Check-in failed." });
         } finally {
             setIsCheckingIn(false);
         }
+    };
+
+    const handleRescan = () => {
+        setScannedResult(null); // useEffect will re-init scanner
     };
 
     if (loading) return null;
@@ -168,7 +201,7 @@ const ScanCheckIn = () => {
                     <div className="w-full max-w-md">
                         {scannedResult ? (
                             <Card className="border-border bg-card overflow-hidden">
-                                <div className="bg-sage h-2 w-full" />
+                                <div className={`h-2 w-full ${scannedResult.status === 'arrived' ? 'bg-amber-500' : 'bg-sage'}`} />
                                 <CardHeader className="text-center">
                                     <CardTitle className="text-2xl">{scannedResult.name}</CardTitle>
                                     <CardDescription>{scannedResult.email}</CardDescription>
@@ -181,7 +214,20 @@ const ScanCheckIn = () => {
                                         </div>
                                         <div className="p-3 bg-muted/30 rounded-lg border border-border text-center">
                                             <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Time</p>
-                                            <p className="text-lg font-bold">{scannedResult.time}</p>
+                                            <p className="text-lg font-bold">{formatToAmPm(scannedResult.time)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-3 bg-muted/30 rounded-lg border border-border text-center">
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Date</p>
+                                            <p className="text-sm font-bold">{scannedResult.date}</p>
+                                        </div>
+                                        <div className="p-3 bg-muted/30 rounded-lg border border-border text-center">
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Status</p>
+                                            <p className={`text-sm font-bold uppercase ${scannedResult.status === 'arrived' ? 'text-amber-500' : 'text-sage'}`}>
+                                                {scannedResult.status}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -193,7 +239,7 @@ const ScanCheckIn = () => {
                                             {scannedResult.tableMarking || "TBA"}
                                         </p>
                                         <p className="text-[10px] text-primary/60 mt-1 uppercase font-bold">
-                                            {scannedResult.location.split(',')[0]}
+                                            {scannedResult.location?.split(',')[0]}
                                         </p>
                                     </div>
 
@@ -201,10 +247,7 @@ const ScanCheckIn = () => {
                                         <Button
                                             variant="outline"
                                             className="flex-1 gap-2 border-border"
-                                            onClick={() => {
-                                                setScannedResult(null);
-                                                window.location.reload();
-                                            }}
+                                            onClick={handleRescan}
                                             disabled={isCheckingIn}
                                         >
                                             <RefreshCw className="w-4 h-4" /> Rescan
@@ -219,7 +262,7 @@ const ScanCheckIn = () => {
                                             ) : (
                                                 <>
                                                     <CheckCircle className="w-4 h-4" />
-                                                    {scannedResult.status === "arrived" ? "Check-in Done" : "Confirm Entry"}
+                                                    {scannedResult.status === "arrived" ? "Already In" : "Confirm Entry"}
                                                 </>
                                             )}
                                         </Button>
@@ -231,7 +274,7 @@ const ScanCheckIn = () => {
                                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                                 <div className="relative bg-card border border-border rounded-xl overflow-hidden shadow-2xl">
                                     <div id="reader" className="w-full aspect-square md:aspect-video object-cover"></div>
-                                    {!isScanning && (
+                                    {isCheckingIn && (
                                         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-8 text-center space-y-4">
                                             <Loader2 className="w-12 h-12 text-primary animate-spin" />
                                             <p className="font-medium">Verifying Entry Pass...</p>

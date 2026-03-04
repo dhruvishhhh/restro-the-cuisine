@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ import { useToast } from "@/hooks/use-toast";
 import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AdminDataCenter from "@/components/AdminDataCenter";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 import {
@@ -41,6 +40,8 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [recentReservations, setRecentReservations] = useState<any[]>([]);
     const [isPaused, setIsPaused] = useState(false);
+    const [pauseReason, setPauseReason] = useState("default");
+    const pauseReasonRef = useRef("default"); // always holds latest value to avoid stale closures
     const [isUpdatingPause, setIsUpdatingPause] = useState(false);
     const [dailyRequirement, setDailyRequirement] = useState("");
     const [isUpdatingReq, setIsUpdatingReq] = useState(false);
@@ -97,11 +98,26 @@ const Dashboard = () => {
         fetchRequirement();
 
         // Real-time listener for reservation pause status
-        const unsubscribePauseStatus = onSnapshot(doc(db, "settings", "reservations"), (docSnap) => {
-            if (docSnap.exists()) {
-                setIsPaused(docSnap.data().isPaused || false);
+        const unsubscribePauseStatus = onSnapshot(
+            doc(db, "settings", "reservations"),
+            (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const paused = data.isPaused || false;
+                    setIsPaused(paused);
+                    // Only sync the stored reason when booking IS paused
+                    // (don't override the admin's dropdown selection when active)
+                    if (paused) {
+                        setPauseReason(data.pauseReason || "default");
+                    }
+                } else {
+                    setIsPaused(false);
+                }
+            },
+            (error) => {
+                console.error("Error listening to settings/reservations:", error);
             }
-        });
+        );
 
         return () => {
             unsubscribeAuth();
@@ -156,14 +172,22 @@ const Dashboard = () => {
     const toggleReservationStatus = async () => {
         setIsUpdatingPause(true);
         try {
+            const newPausedState = !isPaused;
+            // Read from ref to guarantee the latest dropdown selection (avoids stale closure)
+            const reasonToSave = pauseReasonRef.current;
             const settingsRef = doc(db, "settings", "reservations");
-            await setDoc(settingsRef, { isPaused: !isPaused }, { merge: true });
+            await setDoc(settingsRef, {
+                isPaused: newPausedState,
+                pauseReason: newPausedState ? reasonToSave : "none",
+                updatedAt: new Date()
+            }, { merge: true });
             toast({
-                title: !isPaused ? "Reservations Paused" : "Reservations Active",
-                description: !isPaused ? "Public booking form is now disabled." : "Public booking form is now enabled."
+                title: newPausedState ? "Reservations Paused" : "Reservations Active",
+                description: newPausedState ? `Booking paused (${reasonToSave === 'out_of_table' ? 'No Tables' : reasonToSave === 'no_booking_today' ? 'No Bookings Today' : 'General'}).` : "Public booking form is now enabled."
             });
-        } catch (error) {
-            toast({ variant: "destructive", title: "Update Failed", description: "Could not sync reservation status." });
+        } catch (error: any) {
+            console.error("Failed to toggle reservation status:", error);
+            toast({ variant: "destructive", title: "Update Failed", description: error?.message || "Could not sync reservation status." });
         } finally {
             setIsUpdatingPause(false);
         }
@@ -211,9 +235,6 @@ const Dashboard = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        <span className="text-accent font-medium">+100%</span> since launch
-                                    </p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -258,7 +279,7 @@ const Dashboard = () => {
 
                         <div className="space-y-8">
                             <Card className="border-border bg-card shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative group">
-                                <div className={`absolute inset-0 opacity-5 transition-colors duration-500 ${isPaused ? 'bg-destructive' : 'bg-accent'}`} />
+                                <div className={`absolute inset-0 opacity-5 transition-colors duration-500 pointer-events-none ${isPaused ? 'bg-destructive' : 'bg-accent'}`} />
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <div className="space-y-1">
                                         <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">Booking Status</CardTitle>
@@ -280,9 +301,42 @@ const Dashboard = () => {
                                         {isPaused ? 'Enable' : 'Disable'}
                                     </Button>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-xs text-muted-foreground mt-2 italic">
-                                        {isPaused ? 'Public is currently unable to book tables.' : 'Accepting new booking requests from visitors.'}
+                                <CardContent className="space-y-4">
+                                    {!isPaused && (
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Reason if disabling:</Label>
+                                            <div className="flex flex-col gap-1.5">
+                                                {[
+                                                    { value: "default", label: "General Pause" },
+                                                    { value: "out_of_table", label: "Out of Table" },
+                                                    { value: "no_booking_today", label: "No Booking for Today" },
+                                                ].map((opt) => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            pauseReasonRef.current = opt.value;
+                                                            setPauseReason(opt.value);
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium border transition-all ${pauseReason === opt.value
+                                                            ? "bg-destructive/10 border-destructive/40 text-destructive"
+                                                            : "bg-background border-border text-muted-foreground hover:border-destructive/30 hover:text-foreground"
+                                                            }`}
+                                                    >
+                                                        {pauseReason === opt.value && <span className="mr-1.5">✓</span>}
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <p className="text-xs text-muted-foreground italic">
+                                        {isPaused
+                                            ? `Public is currently seeing: ${pauseReason === 'out_of_table' ? 'Out of tables' :
+                                                pauseReason === 'no_booking_today' ? 'No bookings today' :
+                                                    'Reservations paused'
+                                            }`
+                                            : 'Accepting new booking requests from visitors.'}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -337,7 +391,6 @@ const Dashboard = () => {
                                 </CardContent>
                             </Card>
 
-                            <AdminDataCenter />
 
                             <Card className="border-border bg-card">
                                 <CardHeader>

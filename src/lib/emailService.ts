@@ -5,9 +5,9 @@ import emailjs from "@emailjs/browser";
 // 1. Create an account & email service (Gmail, Outlook, etc.)
 // 2. Create a template with variables: {{to_email}}, {{to_name}}, {{date}}, {{time}}, {{guests}}, {{location}}, {{table_marking}}, {{qr_code_url}}, {{check_in_token}}
 // 3. Replace these IDs with your own:
-const EMAILJS_SERVICE_ID = "service_earthmonk";
-const EMAILJS_TEMPLATE_ID = "template_approval";
-const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID = "service_dxdyseb";
+const EMAILJS_TEMPLATE_ID = "template_lqzq74b";
+const EMAILJS_PUBLIC_KEY = "268rLLEoF7z_VEAEX";
 
 export interface ApprovalEmailData {
   to_email: string;
@@ -18,6 +18,7 @@ export interface ApprovalEmailData {
   location: string;
   table_marking: string;
   check_in_token: string;
+  html_content?: string;
 }
 
 export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolean> => {
@@ -33,15 +34,11 @@ export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolea
     table_marking: data.table_marking,
     qr_code_url: qrCodeUrl,
     check_in_token: data.check_in_token,
+    html_content: data.html_content || "", // Pass the rich HTML if provided
     subject: "Your Reservation at Earth Monk Sanctuary is Approved!",
   };
 
   try {
-    if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY") {
-      console.warn("[EmailJS] Not configured — skipping email send. Set up keys in src/lib/emailService.ts");
-      return false;
-    }
-
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY);
     return true;
   } catch (error) {

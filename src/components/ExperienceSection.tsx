@@ -34,7 +34,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16 md:mb-24"
+          className="text-center mb-10 md:mb-24"
         >
           <span className="section-subheading text-gold/80">The Experience</span>
           <h2 className="section-heading text-primary-foreground mt-4">
@@ -43,7 +43,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
         </motion.div>
 
         {/* Image Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-16 md:mb-24">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-10 md:mb-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -53,7 +53,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
             <img
               src={exp1}
               alt="Golden pawn dant lights over wooden tables with plants"
-              className="w-full h-[350px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+              className="w-full h-[220px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700 rounded-sm"
             />
           </motion.div>
           <motion.div
@@ -65,13 +65,13 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
             <img
               src={exp2}
               alt="Cozy bamboo lounge with tropical plants"
-              className="w-full h-[350px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+              className="w-full h-[220px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700 rounded-sm"
             />
           </motion.div>
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-12">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPreviousSlot } from "@/lib/timeSlots";
+import { getPreviousSlot, formatToAmPm, normalizeTimeTo24h } from "@/lib/timeSlots";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, onSnapshot, updateDoc, doc, query, orderBy, getDocs, where, deleteDoc, addDoc } from "firebase/firestore";
@@ -17,6 +17,7 @@ import {
     Clock,
     Users,
     ChevronRight,
+    ChevronLeft,
     Filter,
     Map as MapIcon,
     Mail,
@@ -24,7 +25,8 @@ import {
     Copy,
     ExternalLink,
     MapPin,
-    ArrowRight
+    ArrowRight,
+    Download
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
@@ -60,6 +62,8 @@ const Reservations = () => {
     const [selectedResForApproval, setSelectedResForApproval] = useState<any>(null);
     const [availableTables, setAvailableTables] = useState<any[]>([]);
     const [selectedTableId, setSelectedTableId] = useState("");
+    const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+    const [showAllDates, setShowAllDates] = useState(false);
 
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -116,6 +120,11 @@ const Reservations = () => {
             const nextT = nextSlot(reservation.time);
 
             const finalAvailable = locationTables.filter(table => {
+                // 1. Check capacity — table must fit the guest count
+                const guestCount = parseInt(reservation.guests) || 1;
+                if ((table.capacity || 0) < guestCount) return false;
+
+                // 2. Check time overlap — no double-booking
                 const isOverlapping = reservations.some(res =>
                     res.tableId === table.id &&
                     res.status === 'approved' &&
@@ -151,6 +160,18 @@ const Reservations = () => {
 
             const updatedRes = { ...selectedResForApproval, status: 'approved', tableMarking: selectedTable.marking, checkInToken };
 
+            // Generate rich HTML content for the email
+            const emailHtml = generateApprovalEmailHTML({
+                to_email: updatedRes.email,
+                to_name: updatedRes.name,
+                date: updatedRes.date,
+                time: updatedRes.time,
+                guests: updatedRes.guests,
+                location: updatedRes.location,
+                table_marking: selectedTable.marking,
+                check_in_token: checkInToken,
+            });
+
             // Attempt to send automated email via configured service
             const emailSent = await sendApprovalEmail({
                 to_email: updatedRes.email,
@@ -161,6 +182,7 @@ const Reservations = () => {
                 location: updatedRes.location,
                 table_marking: selectedTable.marking,
                 check_in_token: checkInToken,
+                html_content: emailHtml, // Attach the rich HTML
             });
 
             setSelectedResForApproval(null);
@@ -239,14 +261,16 @@ const Reservations = () => {
             res.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "all" || res.status === statusFilter;
         const matchesLocation = selectedLocation === "all" || res.location === selectedLocation;
-        return matchesSearch && matchesStatus && matchesLocation;
+        const matchesDate = showAllDates || res.date === selectedDate;
+        return matchesSearch && matchesStatus && matchesLocation && matchesDate;
     });
 
     // Group by Time Slot
     const timeSlots = Array.from(new Set(filteredReservations.map(r => r.time))).sort((a, b) => {
-        // Updated for 24h format "HH:mm"
-        const [hA, mA] = a.split(':').map(Number);
-        const [hB, mB] = b.split(':').map(Number);
+        const nA = normalizeTimeTo24h(a);
+        const nB = normalizeTimeTo24h(b);
+        const [hA, mA] = nA.split(':').map(Number);
+        const [hB, mB] = nB.split(':').map(Number);
         return (hA * 60 + mA) - (hB * 60 + mB);
     });
 
@@ -276,9 +300,106 @@ const Reservations = () => {
                             <p className="text-sm text-muted-foreground">Detailed categorized bookings tracking.</p>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <Calendar className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm font-medium text-foreground">{format(new Date(), "EEEE, MMMM do")}</span>
+                        <div className="flex items-center gap-2">
+                            {/* Date Navigation */}
+                            <div className="flex items-center gap-1 bg-muted/30 rounded-lg border border-border p-1">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    disabled={showAllDates}
+                                    onClick={() => {
+                                        const d = new Date(selectedDate);
+                                        d.setDate(d.getDate() - 1);
+                                        setSelectedDate(format(d, "yyyy-MM-dd"));
+                                    }}
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </Button>
+                                <button
+                                    onClick={() => setShowAllDates(false)}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${!showAllDates
+                                        ? "bg-accent text-accent-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    <input
+                                        type="date"
+                                        value={selectedDate}
+                                        onChange={(e) => {
+                                            setSelectedDate(e.target.value);
+                                            setShowAllDates(false);
+                                        }}
+                                        className="bg-transparent border-none outline-none text-xs font-bold cursor-pointer w-[110px]"
+                                    />
+                                </button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    disabled={showAllDates}
+                                    onClick={() => {
+                                        const d = new Date(selectedDate);
+                                        d.setDate(d.getDate() + 1);
+                                        setSelectedDate(format(d, "yyyy-MM-dd"));
+                                    }}
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
+                                <div className="w-px h-6 bg-border" />
+                                <button
+                                    onClick={() => setShowAllDates(true)}
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${showAllDates
+                                        ? "bg-accent text-accent-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    All
+                                </button>
+                            </div>
+                            {/* CSV Download */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-10 gap-2 text-xs font-bold"
+                                onClick={() => {
+                                    if (filteredReservations.length === 0) {
+                                        toast({ variant: "destructive", title: "No Data", description: "No reservations to export for this date." });
+                                        return;
+                                    }
+                                    const columns = [
+                                        { key: "name", label: "Name" },
+                                        { key: "email", label: "Email" },
+                                        { key: "date", label: "Date" },
+                                        { key: "time", label: "Time" },
+                                        { key: "guests", label: "Guests" },
+                                        { key: "location", label: "Location" },
+                                        { key: "status", label: "Status" },
+                                        { key: "tableMarking", label: "Table" },
+                                    ];
+                                    const headers = columns.map(c => c.label).join(",");
+                                    const rows = filteredReservations.map(item =>
+                                        columns.map(col => {
+                                            let val = item[col.key] ?? "";
+                                            if (val?.toDate) val = val.toDate().toLocaleString();
+                                            return `"${String(val).replace(/"/g, '""')}"`;
+                                        }).join(",")
+                                    );
+                                    const csv = [headers, ...rows].join("\n");
+                                    const bom = "\uFEFF";
+                                    const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement("a");
+                                    const fileName = showAllDates ? `AllDates_R.csv` : `${selectedDate}_R.csv`;
+                                    link.href = url;
+                                    link.download = fileName;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                    toast({ title: "Export Complete", description: `Downloaded as ${fileName}` });
+                                }}
+                            >
+                                <Download className="w-4 h-4" /> CSV
+                            </Button>
                         </div>
                     </div>
 
@@ -337,7 +458,7 @@ const Reservations = () => {
                                                 <div className="h-px flex-1 bg-border/50" />
                                                 <div className="flex items-center gap-2 px-6 py-2 bg-muted/30 rounded-full border border-border shadow-sm">
                                                     <Clock className="w-4 h-4 text-accent" />
-                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">{slot}</span>
+                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">{formatToAmPm(slot)}</span>
                                                     <span className="ml-2 px-2 py-0.5 bg-accent/10 text-accent rounded text-[10px] font-bold">
                                                         {filteredReservations.filter(r => r.time === slot).length}
                                                     </span>
@@ -455,22 +576,28 @@ const Reservations = () => {
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Select Table for {selectedResForApproval?.location}</label>
                                     <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-auto">
-                                        {availableTables.map(table => (
-                                            <button
-                                                key={table.id}
-                                                onClick={() => setSelectedTableId(table.id)}
-                                                className={`p-3 rounded-lg border-2 text-left transition-all ${selectedTableId === table.id
-                                                    ? 'border-accent bg-accent/5 ring-1 ring-accent'
-                                                    : 'border-border bg-background hover:border-accent/40'
-                                                    }`}
-                                            >
-                                                <p className="font-bold text-sm">{table.marking}</p>
-                                                <p className="text-[10px] text-muted-foreground">Capacity: {table.capacity}</p>
-                                            </button>
-                                        ))}
+                                        {availableTables.map(table => {
+                                            const guestCount = parseInt(selectedResForApproval?.guests) || 1;
+                                            const isTight = table.capacity === guestCount;
+                                            return (
+                                                <button
+                                                    key={table.id}
+                                                    onClick={() => setSelectedTableId(table.id)}
+                                                    className={`p-3 rounded-lg border-2 text-left transition-all ${selectedTableId === table.id
+                                                        ? 'border-accent bg-accent/5 ring-1 ring-accent'
+                                                        : 'border-border bg-background hover:border-accent/40'
+                                                        }`}
+                                                >
+                                                    <p className="font-bold text-sm">{table.marking}</p>
+                                                    <p className={`text-[10px] font-bold ${isTight ? 'text-sage' : 'text-amber-500'}`}>
+                                                        {table.capacity} seats {isTight ? '(perfect fit)' : `(+${table.capacity - guestCount} extra)`}
+                                                    </p>
+                                                </button>
+                                            );
+                                        })}
                                         {availableTables.length === 0 && (
                                             <div className="col-span-2 py-8 text-center border-2 border-dashed border-border rounded-lg text-muted-foreground text-xs italic">
-                                                No tables found for this location.
+                                                No tables with {selectedResForApproval?.guests}+ capacity available at this location and time.
                                             </div>
                                         )}
                                     </div>
@@ -504,7 +631,7 @@ const Reservations = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 text-xs bg-muted/30 p-3 rounded border border-border">
                                         <p><strong>Date:</strong> {selectedResForEmail?.date}</p>
-                                        <p><strong>Time:</strong> {selectedResForEmail?.time}</p>
+                                        <p><strong>Time:</strong> {formatToAmPm(selectedResForEmail?.time)}</p>
                                         <p><strong>Guests:</strong> {selectedResForEmail?.guests}</p>
                                         <p><strong>Table:</strong> {selectedResForEmail?.tableMarking}</p>
                                     </div>
@@ -521,7 +648,7 @@ const Reservations = () => {
                                     <p>We look forward to hosting you soon!</p>
                                     <p className="text-xs text-muted-foreground">Warmly,<br />The House of Earth Monk</p>
                                 </div>
-                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`Earth Monk Sanctuary Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${selectedResForEmail.time}.\nPlease use the provided QR pass for entry.`)}>
+                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`Earth Monk Sanctuary Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${formatToAmPm(selectedResForEmail.time)}.\nPlease use the provided QR pass for entry.`)}>
                                     <Copy className="w-4 h-4" /> Copy Email Text
                                 </Button>
                             </div>

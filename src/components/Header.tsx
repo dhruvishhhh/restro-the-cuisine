@@ -13,7 +13,7 @@ const navLinks = [
   { label: "CONTACT", href: "/contact" },
 ];
 
-const Header = () => {
+const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -24,6 +24,18 @@ const Header = () => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   const navLinkClasses = (linkHref: string) => {
     const isActive = location.pathname === linkHref;
@@ -42,20 +54,20 @@ const Header = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+        className={`fixed ${topOffset ? 'top-8' : 'top-0'} left-0 right-0 z-50 transition-all duration-500 ${scrolled
           ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
           : "bg-transparent"
           }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-12 py-3 md:py-4">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 group">
-            <EarthMonkLogo className="w-12 h-12" />
+            <EarthMonkLogo className="w-10 h-10 md:w-12 md:h-12" />
             <div className="flex flex-col">
-              <span className="font-serif text-lg md:text-xl font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
+              <span className="font-serif text-base md:text-xl font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
                 EARTH MONK
               </span>
-              <span className="text-[8px] uppercase tracking-[0.4em] text-gold/60 -mt-1">
+              <span className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-gold/60 -mt-1">
                 SANCTUARY
               </span>
             </div>
@@ -83,46 +95,69 @@ const Header = () => {
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className={`md:hidden ${scrolled || !isHomePage ? 'text-primary' : 'text-primary-foreground'}`}
+            className={`md:hidden relative z-[70] p-2 ${mobileOpen ? 'text-gold' : scrolled || !isHomePage ? 'text-primary' : 'text-primary-foreground'}`}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </motion.header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — Full-screen overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-forest-deep/98 flex flex-col items-center justify-center gap-8"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[60] bg-forest-deep/[0.98] backdrop-blur-sm flex flex-col items-center justify-center"
           >
-            {navLinks.map((link, i) => (
+            {/* Close button at top-right */}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute top-4 right-4 p-2 text-gold/80 hover:text-gold transition-colors z-[70]"
+              aria-label="Close menu"
+            >
+              <X size={28} />
+            </button>
+
+            {/* Nav Links */}
+            <nav className="flex flex-col items-center gap-6">
+              {navLinks.map((link, i) => {
+                const isActive = location.pathname === link.href;
+                return (
+                  <motion.a
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.08 }}
+                    className={`text-base uppercase tracking-[0.25em] font-sans font-medium transition-colors ${isActive ? "text-gold" : "text-primary-foreground/70 hover:text-gold"
+                      }`}
+                  >
+                    {link.label}
+                  </motion.a>
+                );
+              })}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="w-12 h-px bg-gold/30 my-2"
+              />
               <motion.a
-                key={link.label}
-                href={link.href}
+                href="/reserve"
                 onClick={() => setMobileOpen(false)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="text-lg uppercase tracking-[0.25em] font-sans text-primary-foreground/80 hover:text-gold transition-colors"
+                transition={{ delay: 0.55 }}
+                className="px-8 py-3 bg-gold text-primary font-bold text-xs uppercase tracking-[0.2em] rounded-sm shadow-lg shadow-gold/20 hover:bg-gold/90 transition-all"
               >
-                {link.label}
+                Book A Table
               </motion.a>
-            ))}
-            <motion.a
-              href="/reserve"
-              onClick={() => setMobileOpen(false)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-4 px-8 py-3 bg-gold text-primary font-bold uppercase tracking-[0.2em] rounded-sm"
-            >
-              Book A Table
-            </motion.a>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

@@ -15,7 +15,7 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
   return (
     <section className="section-padding" id="about" ref={ref}>
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-20 items-center">
           {/* Image */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -26,7 +26,7 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             <img
               src={aboutImg}
               alt="Artisan coffee being poured with latte art"
-              className="w-full h-[500px] md:h-[600px] object-cover"
+              className="w-full h-[280px] md:h-[600px] object-cover rounded-sm"
             />
           </motion.div>
 
