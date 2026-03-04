@@ -51,8 +51,8 @@ const AdminSidebar = ({ userEmail }: AdminSidebarProps) => {
     ];
 
     return (
-        <aside className="w-full lg:w-64 border-b lg:border-r border-border bg-card flex flex-col shrink-0">
-            <div className="p-6">
+        <aside className="w-full lg:w-60 border-b lg:border-r border-border bg-card flex flex-col shrink-0">
+            <div className="p-5">
                 <h1 className="text-xl font-bold text-primary flex items-center gap-2">
                     <LayoutDashboard className="w-6 h-6" /> Admin Panel
                 </h1>

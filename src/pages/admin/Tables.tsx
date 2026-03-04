@@ -628,7 +628,7 @@ const Tables = () => {
             <AdminSidebar userEmail={user?.email} />
             <main className="flex-1 overflow-auto">
                 <AdminHeader />
-                <div className="p-4 md:p-8 space-y-8">
+                <div className="p-4 md:p-6 space-y-6">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-card p-6 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-6">
                             <div className="hidden md:flex flex-col">
@@ -724,7 +724,7 @@ const Tables = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                         {/* Add Table Form */}
                         <div className="lg:col-span-1">
                             <Card className="border-border bg-card h-fit">

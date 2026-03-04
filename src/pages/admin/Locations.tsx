@@ -94,7 +94,7 @@ const AdminLocations = () => {
                 <AdminSidebar userEmail={user?.email} />
                 <main className="flex-1 overflow-auto">
                     <AdminHeader />
-                    <div className="flex items-center justify-center p-8 min-h-[calc(100vh-80px)]">
+                    <div className="flex items-center justify-center p-6 min-h-[calc(100vh-64px)]">
                         <Card className="w-full max-w-md border-border bg-card shadow-2xl">
                             <CardHeader className="text-center">
                                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
@@ -132,13 +132,13 @@ const AdminLocations = () => {
 
             <main className="flex-1 overflow-auto">
                 <AdminHeader />
-                <div className="p-8 space-y-8">
+                <div className="p-6 space-y-6">
                     <div>
                         <h2 className="text-3xl font-bold text-foreground">Location Management</h2>
                         <p className="text-muted-foreground">Add and manage restaurant sanctuary locations.</p>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="grid lg:grid-cols-3 gap-6">
                         {/* Add Location Form */}
                         <Card className="border-border bg-card">
                             <CardHeader>

@@ -223,7 +223,7 @@ const Dashboard = () => {
             <main className="flex-1 overflow-auto">
                 <AdminHeader />
 
-                <div className="p-8 space-y-8">
+                <div className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {stats.map((stat) => (
                             <Card key={stat.name} className="border-border bg-card">
@@ -240,7 +240,7 @@ const Dashboard = () => {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-2 border-border bg-card">
                             <CardHeader>
                                 <CardTitle className="text-lg">Recent Reservations</CardTitle>
@@ -277,7 +277,7 @@ const Dashboard = () => {
                             </CardContent>
                         </Card>
 
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             <Card className="border-border bg-card shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative group">
                                 <div className={`absolute inset-0 opacity-5 transition-colors duration-500 pointer-events-none ${isPaused ? 'bg-destructive' : 'bg-accent'}`} />
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">

@@ -91,7 +91,7 @@ const AdminHeader = () => {
     };
 
     return (
-        <header className="h-20 border-b border-border bg-card/50 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-50">
+        <header className="h-16 border-b border-border bg-card/50 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-50">
             <AdminPresence />
 
             <div className="flex flex-col">

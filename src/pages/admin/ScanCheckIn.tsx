@@ -192,7 +192,7 @@ const ScanCheckIn = () => {
             <AdminSidebar userEmail={user?.email} />
             <main className="flex-1 overflow-auto">
                 <AdminHeader />
-                <div className="p-4 md:p-8 space-y-8 flex flex-col items-center">
+                <div className="p-4 md:p-6 space-y-6 flex flex-col items-center">
                     <div className="w-full max-w-md text-center">
                         <h2 className="text-3xl font-bold text-foreground">Entry Check-In</h2>
                         <p className="text-muted-foreground mt-2">Scan guest QR code to verify and assign seats.</p>
