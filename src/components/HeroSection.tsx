@@ -45,10 +45,10 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
 
         <motion.a
           href="/reserve"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.5 }}
-          className="px-8 md:px-12 py-3.5 md:py-4 bg-gold text-forest-deep border border-gold uppercase tracking-[0.25em] text-xs md:text-sm font-sans font-bold hover:bg-transparent hover:text-gold transition-all duration-500 shadow-xl shadow-black/20"
+          className="px-8 md:px-12 py-3.5 md:py-4 bg-gold text-forest-deep border border-gold uppercase tracking-[0.3em] text-xs md:text-sm font-sans font-bold hover:bg-transparent hover:text-gold transition-all duration-500 shadow-xl shadow-black/20"
         >
           Book A Table
         </motion.a>
