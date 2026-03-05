@@ -127,6 +127,7 @@ const Tables = () => {
     const [editMode, setEditMode] = useState(false);
     const [viewSlot, setViewSlot] = useState(getCurrentSlot());
     const [viewDate, setViewDate] = useState(format(new Date(), "yyyy-MM-dd"));
+    const [isLiveSlot, setIsLiveSlot] = useState(true);
     const [reservations, setReservations] = useState<any[]>([]);
     const [zoom, setZoom] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -207,6 +208,18 @@ const Tables = () => {
             slotStatusSub();
         };
     }, [navigate]);
+
+    // Auto-update to current slot when in live mode
+    useEffect(() => {
+        if (!isLiveSlot) return;
+        const interval = setInterval(() => {
+            const currentSlot = getCurrentSlot();
+            const today = format(new Date(), "yyyy-MM-dd");
+            setViewSlot(currentSlot);
+            setViewDate(today);
+        }, 30000); // Check every 30 seconds
+        return () => clearInterval(interval);
+    }, [isLiveSlot]);
 
     // Handle non-passive wheel listener to prevent page scroll
     useEffect(() => {
@@ -650,21 +663,46 @@ const Tables = () => {
                                     type="date"
                                     className="h-10 bg-background text-sm"
                                     value={viewDate}
-                                    onChange={(e) => setViewDate(e.target.value)}
+                                    onChange={(e) => {
+                                        setViewDate(e.target.value);
+                                        setIsLiveSlot(e.target.value === format(new Date(), "yyyy-MM-dd") && viewSlot === getCurrentSlot());
+                                    }}
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
                                 <Label htmlFor="slot-pick" className="text-[10px] uppercase tracking-widest text-muted-foreground">Time Slot</Label>
-                                <select
-                                    id="slot-pick"
-                                    className="h-10 bg-background border border-border rounded-lg px-3 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[140px]"
-                                    value={viewSlot}
-                                    onChange={(e) => setViewSlot(e.target.value)}
-                                >
-                                    {timeSlots.map(slot => (
-                                        <option key={slot} value={slot}>{slot}</option>
-                                    ))}
-                                </select>
+                                <div className="flex items-center gap-2">
+                                    <select
+                                        id="slot-pick"
+                                        className="h-10 bg-background border border-border rounded-lg px-3 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[140px]"
+                                        value={viewSlot}
+                                        onChange={(e) => {
+                                            setViewSlot(e.target.value);
+                                            setIsLiveSlot(e.target.value === getCurrentSlot() && viewDate === format(new Date(), "yyyy-MM-dd"));
+                                        }}
+                                    >
+                                        {timeSlots.map(slot => (
+                                            <option key={slot} value={slot}>
+                                                {slot === getCurrentSlot() ? `⚡ NOW — ${slot}` : slot}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {!isLiveSlot && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-10 text-[10px] font-black uppercase tracking-wider gap-1 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/10"
+                                            onClick={() => {
+                                                setViewSlot(getCurrentSlot());
+                                                setViewDate(format(new Date(), "yyyy-MM-dd"));
+                                                setIsLiveSlot(true);
+                                            }}
+                                        >
+                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                            Live
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex flex-col gap-1.5">
                                 <Label htmlFor="loc-pick" className="text-[10px] uppercase tracking-widest text-muted-foreground">Area Filter</Label>
