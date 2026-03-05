@@ -34,13 +34,13 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         {/* Top Bar: Brand & Action Buttons */}
         <div className="flex justify-between items-center mb-10 pb-10 border-b border-gold/10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 border border-gold/40 flex items-center justify-center font-serif text-lg tracking-tighter pt-1">
-              EM
-            </div>
+          <div className="flex flex-col">
             <h3 className="text-lg md:text-xl tracking-wider uppercase font-medium">
-              Earthmonk
+              The House of
             </h3>
+            <span className="text-xs md:text-sm tracking-[0.3em] font-bold text-gold/60 -mt-1">
+              EARTHMONK
+            </span>
           </div>
 
           <div className="flex gap-2 md:gap-4">
@@ -105,16 +105,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Brand Seal */}
-          <div className="mt-8 opacity-20 relative">
-            <div className="w-32 h-32 md:w-40 md:h-40 border border-gold/40 rounded-full flex items-center justify-center">
-              <div className="absolute inset-0 border border-gold/10 rounded-full scale-[0.85]" />
-              <div className="text-4xl md:text-5xl tracking-tighter font-serif select-none pt-2">
-                EM
-              </div>
-            </div>
-            <div className="absolute -inset-4 border border-gold/5 rounded-full animate-[spin_20s_linear_infinite] border-dashed" />
-          </div>
         </div>
       </div>
     </footer>
