@@ -148,7 +148,9 @@ const Reservations = () => {
 
         try {
             const selectedTable = availableTables.find(t => t.id === selectedTableId);
-            const checkInToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            // 8-character uppercase alphanumeric is easier for QR scanners to focus on
+            const checkInToken = Math.random().toString(36).substring(2, 6).toUpperCase() +
+                Math.random().toString(36).substring(2, 6).toUpperCase();
 
             await updateDoc(doc(db, "reservations", selectedResForApproval.id), {
                 status: "approved",
@@ -639,9 +641,9 @@ const Reservations = () => {
                                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-sans font-bold">Your Entry Pass</p>
                                         <QRCodeSVG
                                             value={selectedResForEmail?.checkInToken || "invalid"}
-                                            size={180}
-                                            level="H"
-                                            includeMargin
+                                            size={256}
+                                            level="Q"
+                                            includeMargin={true}
                                         />
                                         <p className="text-[10px] text-muted-foreground italic px-6 text-center font-sans">Present this QR code at the entrance for seamless check-in.</p>
                                     </div>
