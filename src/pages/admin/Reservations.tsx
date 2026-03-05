@@ -218,6 +218,7 @@ const Reservations = () => {
                 tableId: selectedTable.id,
                 tableMarking: selectedTable.marking,
                 checkInToken: checkInToken,
+                approvedAt: new Date(),
                 updatedAt: new Date(),
             });
 

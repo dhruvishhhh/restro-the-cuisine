@@ -125,7 +125,7 @@ const Tables = () => {
     const [newTable, setNewTable] = useState({ marking: "", capacity: "", location: "", shape: "square" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [viewSlot, setViewSlot] = useState(getCurrentSlot());
+    const [viewSlot, setViewSlot] = useState("NOW");
     const [viewDate, setViewDate] = useState(format(new Date(), "yyyy-MM-dd"));
     const [isLiveSlot, setIsLiveSlot] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -210,14 +210,11 @@ const Tables = () => {
         };
     }, [navigate]);
 
-    // Auto-update to current slot when in live mode
+    // Auto-update date when in live/NOW mode
     useEffect(() => {
         if (!isLiveSlot) return;
         const interval = setInterval(() => {
-            const currentSlot = getCurrentSlot();
-            const today = format(new Date(), "yyyy-MM-dd");
-            setViewSlot(currentSlot);
-            setViewDate(today);
+            setViewDate(format(new Date(), "yyyy-MM-dd"));
         }, 30000);
         return () => clearInterval(interval);
     }, [isLiveSlot]);
@@ -228,29 +225,31 @@ const Tables = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // Auto-release tables when reservation hold period (90 min) expires
+    // Auto-release tables when reservation hold period (90 min from arrivedAt) expires
     useEffect(() => {
         if (reservations.length === 0) return;
         const now = new Date();
         const todayStr = format(now, "yyyy-MM-dd");
-        const currentTotalMin = now.getHours() * 60 + now.getMinutes();
-        const HOLD_DURATION = 90; // minutes
+        const HOLD_DURATION_MS = 90 * 60 * 1000; // 90 min in ms
 
         reservations.forEach(async (res) => {
-            // Only process arrived/active reservations for today
             if (res.date !== todayStr) return;
             if (res.status !== "arrived" && res.status !== "active") return;
-            if (!res.tableId || !res.time) return;
+            if (!res.tableId) return;
 
-            const normalizedTime = normalizeTimeTo24h(res.time);
-            const [h, m] = normalizedTime.split(":").map(Number);
-            const resStartMin = h * 60 + m;
-            const resEndMin = resStartMin + HOLD_DURATION;
+            // Use arrivedAt if available, else fall back to time slot
+            let arrivalTime: Date | null = null;
+            if (res.arrivedAt) {
+                arrivalTime = res.arrivedAt.toDate ? res.arrivedAt.toDate() : new Date(res.arrivedAt);
+            } else if (res.checkInTime) {
+                arrivalTime = res.checkInTime.toDate ? res.checkInTime.toDate() : new Date(res.checkInTime);
+            }
 
-            // If current time is past the hold period, auto-free
-            if (currentTotalMin >= resEndMin) {
+            if (!arrivalTime) return;
+
+            const elapsed = now.getTime() - arrivalTime.getTime();
+            if (elapsed >= HOLD_DURATION_MS) {
                 try {
-                    // Free the table slot
                     const slotDocId = `${res.tableId}_${res.date}_${res.time}`;
                     await setDoc(doc(db, "table_slots", slotDocId), {
                         tableId: res.tableId,
@@ -260,13 +259,14 @@ const Tables = () => {
                         updatedAt: new Date()
                     }, { merge: true });
 
-                    // Mark reservation as completed
                     await updateDoc(doc(db, "reservations", res.id), {
                         status: "completed",
+                        completedAt: new Date(),
+                        freedAt: new Date(),
                         updatedAt: new Date()
                     });
 
-                    console.log(`[Auto-Free] Table freed: ${res.tableId} for ${res.name} (${res.time} + ${HOLD_DURATION}min expired)`);
+                    console.log(`[Auto-Free] Table freed for ${res.name} (arrived ${arrivalTime.toLocaleTimeString()}, 90min expired)`);
                 } catch (err) {
                     console.error("[Auto-Free] Failed:", err);
                 }
@@ -726,28 +726,35 @@ const Tables = () => {
                                     type="date"
                                     className="h-10 bg-background text-sm"
                                     value={viewDate}
+                                    disabled={viewSlot === "NOW"}
                                     onChange={(e) => {
                                         setViewDate(e.target.value);
-                                        setIsLiveSlot(e.target.value === format(new Date(), "yyyy-MM-dd") && viewSlot === getCurrentSlot());
+                                        setIsLiveSlot(false);
                                     }}
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="slot-pick" className="text-[10px] uppercase tracking-widest text-muted-foreground">Time Slot</Label>
+                                <Label htmlFor="slot-pick" className="text-[10px] uppercase tracking-widest text-muted-foreground">View Mode</Label>
                                 <div className="flex items-center gap-2">
                                     <select
                                         id="slot-pick"
-                                        className="h-10 bg-background border border-border rounded-lg px-3 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[140px]"
+                                        className="h-10 bg-background border border-border rounded-lg px-3 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[160px]"
                                         value={viewSlot}
                                         onChange={(e) => {
-                                            setViewSlot(e.target.value);
-                                            setIsLiveSlot(e.target.value === getCurrentSlot() && viewDate === format(new Date(), "yyyy-MM-dd"));
+                                            const val = e.target.value;
+                                            setViewSlot(val);
+                                            if (val === "NOW") {
+                                                setIsLiveSlot(true);
+                                                setViewDate(format(new Date(), "yyyy-MM-dd"));
+                                            } else {
+                                                setIsLiveSlot(false);
+                                            }
                                         }}
                                     >
+                                        <option value="NOW">⚡ NOW — Live Data</option>
+                                        <option disabled>──────────</option>
                                         {timeSlots.map(slot => (
-                                            <option key={slot} value={slot}>
-                                                {slot === getCurrentSlot() ? `⚡ NOW — ${slot}` : slot}
-                                            </option>
+                                            <option key={slot} value={slot}>{slot}</option>
                                         ))}
                                     </select>
                                     {!isLiveSlot && (
@@ -756,7 +763,7 @@ const Tables = () => {
                                             size="sm"
                                             className="h-10 text-[10px] font-black uppercase tracking-wider gap-1 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/10"
                                             onClick={() => {
-                                                setViewSlot(getCurrentSlot());
+                                                setViewSlot("NOW");
                                                 setViewDate(format(new Date(), "yyyy-MM-dd"));
                                                 setIsLiveSlot(true);
                                             }}
@@ -1032,17 +1039,59 @@ const Tables = () => {
                                         {/* Tables Layer: Higher z-index than Pan Layer */}
                                         <div className="absolute inset-0 z-10" style={{ pointerEvents: 'none' }}>
                                             {filteredTables.map((table, index) => {
-                                                const reservation = reservations.find(res =>
-                                                    res.tableId === table.id &&
-                                                    res.date === viewDate &&
-                                                    isSlotInRange(viewSlot, res.time, 90)
-                                                );
+                                                let reservation: any = null;
+                                                let isArrived = false;
+                                                let isReserved = false;
 
-                                                const isArrived = reservation?.status === 'arrived';
-                                                const isReserved = reservation?.status === 'approved' && !isArrived;
+                                                const HOLD_DURATION_MS = 90 * 60 * 1000;
+
+                                                if (viewSlot === "NOW") {
+                                                    // Real-time mode: check actual timestamps
+                                                    const now = new Date();
+                                                    const todayStr = format(now, "yyyy-MM-dd");
+
+                                                    // Find active reservation for this table RIGHT NOW
+                                                    reservation = reservations.find(res => {
+                                                        if (res.tableId !== table.id || res.date !== todayStr) return false;
+
+                                                        if (res.status === "arrived" || res.status === "active") {
+                                                            // Check if still within 90min hold from arrival
+                                                            let arrTime: Date | null = null;
+                                                            if (res.arrivedAt) arrTime = res.arrivedAt.toDate ? res.arrivedAt.toDate() : new Date(res.arrivedAt);
+                                                            else if (res.checkInTime) arrTime = res.checkInTime.toDate ? res.checkInTime.toDate() : new Date(res.checkInTime);
+                                                            if (arrTime && (now.getTime() - arrTime.getTime()) < HOLD_DURATION_MS) return true;
+                                                            return false;
+                                                        }
+
+                                                        if (res.status === "approved") {
+                                                            // Show as reserved if the reservation time is within 30 min from now
+                                                            const normalizedTime = normalizeTimeTo24h(res.time);
+                                                            const [h, m] = normalizedTime.split(":").map(Number);
+                                                            const slotMin = h * 60 + m;
+                                                            const nowMin = now.getHours() * 60 + now.getMinutes();
+                                                            // Reserved if slot is within -30 to +30 min from now
+                                                            return Math.abs(nowMin - slotMin) <= 30;
+                                                        }
+
+                                                        return false;
+                                                    });
+
+                                                    isArrived = reservation?.status === "arrived" || reservation?.status === "active";
+                                                    isReserved = reservation?.status === "approved" && !isArrived;
+                                                } else {
+                                                    // Slot-based browsing mode (unchanged)
+                                                    reservation = reservations.find(res =>
+                                                        res.tableId === table.id &&
+                                                        res.date === viewDate &&
+                                                        isSlotInRange(viewSlot, res.time, 90)
+                                                    );
+                                                    isArrived = reservation?.status === "arrived";
+                                                    isReserved = reservation?.status === "approved" && !isArrived;
+                                                }
 
                                                 // Slot-specific manual status
-                                                const manualStatus = slotStatuses[`${table.id}_${viewDate}_${viewSlot}`];
+                                                const slotKey = viewSlot === "NOW" ? `${table.id}_${format(new Date(), "yyyy-MM-dd")}_${getCurrentSlot()}` : `${table.id}_${viewDate}_${viewSlot}`;
+                                                const manualStatus = slotStatuses[slotKey];
 
                                                 const finalStatus = isArrived || manualStatus === 'occupied' ? 'occupied' :
                                                     manualStatus === 'cleaning' ? 'cleaning' :

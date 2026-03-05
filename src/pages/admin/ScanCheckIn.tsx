@@ -139,6 +139,7 @@ const ScanCheckIn = () => {
             if (reservation.status === "approved") {
                 await updateDoc(doc(db, "reservations", reservation.id), {
                     status: "arrived",
+                    arrivedAt: new Date(),
                     checkInTime: new Date(),
                     updatedAt: new Date(),
                 });
