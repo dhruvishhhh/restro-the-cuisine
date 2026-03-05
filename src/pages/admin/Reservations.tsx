@@ -26,7 +26,8 @@ import {
     ExternalLink,
     MapPin,
     ArrowRight,
-    Download
+    Download,
+    Loader2
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
@@ -64,6 +65,7 @@ const Reservations = () => {
     const [selectedTableId, setSelectedTableId] = useState("");
     const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
     const [showAllDates, setShowAllDates] = useState(false);
+    const [isApproving, setIsApproving] = useState(false);
 
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -202,7 +204,8 @@ const Reservations = () => {
     };
 
     const handleApprove = async () => {
-        if (!selectedTableId || !selectedResForApproval) return;
+        if (!selectedTableId || !selectedResForApproval || isApproving) return;
+        setIsApproving(true);
 
         try {
             const selectedTable = availableTables.find(t => t.id === selectedTableId);
@@ -232,7 +235,7 @@ const Reservations = () => {
                 check_in_token: checkInToken,
             });
 
-            // Attempt to send automated email via configured service
+            // Send ONE automated email via EmailJS (template uses qr_code_url)
             const emailSent = await sendApprovalEmail({
                 to_email: updatedRes.email,
                 to_name: updatedRes.name,
@@ -242,7 +245,6 @@ const Reservations = () => {
                 location: updatedRes.location,
                 table_marking: selectedTable.marking,
                 check_in_token: checkInToken,
-                html_content: emailHtml, // Attach the rich HTML
             });
 
             setSelectedResForApproval(null);
@@ -257,6 +259,8 @@ const Reservations = () => {
         } catch (error) {
             console.error("Approval error:", error);
             toast({ variant: "destructive", title: "Error", description: "Failed to approve reservation." });
+        } finally {
+            setIsApproving(false);
         }
     };
 
@@ -672,10 +676,14 @@ const Reservations = () => {
                                 </div>
                                 <Button
                                     className="w-full gap-2 bg-accent hover:bg-accent/90"
-                                    disabled={!selectedTableId}
+                                    disabled={!selectedTableId || isApproving}
                                     onClick={handleApprove}
                                 >
-                                    <CheckCircle className="w-4 h-4" /> Confirm Approval
+                                    {isApproving ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> Approving...</>
+                                    ) : (
+                                        <><CheckCircle className="w-4 h-4" /> Confirm Approval</>
+                                    )}
                                 </Button>
                             </div>
                         </DialogContent>
