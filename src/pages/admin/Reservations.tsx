@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { QRCodeSVG } from "qrcode.react";
-import { sendApprovalEmail, generateApprovalEmailHTML } from "@/lib/emailService";
+import { sendApprovalEmail, generateApprovalEmailHTML, sendReminderEmail, generateReminderEmailHTML } from "@/lib/emailService";
 import {
     Dialog,
     DialogContent,
@@ -107,51 +107,79 @@ const Reservations = () => {
     useEffect(() => {
         if (reservations.length === 0) return;
 
-        const now = new Date();
-        const todayStr = format(now, "yyyy-MM-dd");
-        const currentHour = now.getHours();
-        const currentMin = now.getMinutes();
-        const currentTotalMin = currentHour * 60 + currentMin;
+        const checkRemindersAndExpiry = async () => {
+            const now = new Date();
+            const todayStr = format(now, "yyyy-MM-dd");
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            const currentTotalMin = currentHour * 60 + currentMin;
 
-        const expiredReservations = reservations.filter(res => {
-            // Only auto-cancel pending or approved reservations
-            if (res.status !== "pending" && res.status !== "approved") return false;
+            for (const res of reservations) {
+                // 1. AUTO-EXPIRY LOGIC
+                if (res.status === "pending" || res.status === "approved") {
+                    if (res.date < todayStr) {
+                        await updateDoc(doc(db, "reservations", res.id), {
+                            status: "cancelled",
+                            cancelReason: "auto_expired",
+                            updatedAt: new Date()
+                        });
+                        console.log(`[Auto-Cancel] Expired: ${res.name}`);
+                    } else if (res.date === todayStr) {
+                        const normalizedTime = normalizeTimeTo24h(res.time);
+                        const [h, m] = normalizedTime.split(":").map(Number);
+                        const slotTotalMin = h * 60 + m;
+                        if (currentTotalMin > (slotTotalMin + 30)) {
+                            await updateDoc(doc(db, "reservations", res.id), {
+                                status: "cancelled",
+                                cancelReason: "auto_expired",
+                                updatedAt: new Date()
+                            });
+                            console.log(`[Auto-Cancel] Expired: ${res.name}`);
+                        }
+                    }
+                }
 
-            // If the reservation date is before today → expired
-            if (res.date < todayStr) return true;
+                // 2. 30-MIN REMINDER LOGIC
+                if (res.status === "approved" && !res.reminderSent && res.date === todayStr) {
+                    const normalizedTime = normalizeTimeTo24h(res.time);
+                    const [h, m] = normalizedTime.split(":").map(Number);
+                    const slotTotalMin = h * 60 + m;
 
-            // If the reservation date is today, check if the time slot has passed
-            if (res.date === todayStr) {
-                const normalizedTime = normalizeTimeTo24h(res.time);
-                const [h, m] = normalizedTime.split(":").map(Number);
-                const slotTotalMin = h * 60 + m;
-                // Consider expired if we're more than 30 min past the slot
-                return currentTotalMin > (slotTotalMin + 30);
+                    // Trigger if within 30-35 mins window (to ensure we catch it once)
+                    const diff = slotTotalMin - currentTotalMin;
+                    if (diff <= 30 && diff > 0) {
+                        console.log(`[Reminder] Triggering for ${res.name} in ${diff}m`);
+                        const sent = await sendReminderEmail({
+                            to_email: res.email,
+                            to_name: res.name,
+                            date: res.date,
+                            time: res.time,
+                            guests: res.guests,
+                            location: res.location,
+                            table_marking: res.tableMarking,
+                            check_in_token: res.checkInToken
+                        });
+
+                        if (sent) {
+                            await updateDoc(doc(db, "reservations", res.id), {
+                                reminderSent: true,
+                                reminderSentAt: new Date(),
+                                updatedAt: new Date()
+                            });
+                            toast({
+                                title: "Reminder Sent",
+                                description: `Pre-visit notification sent to ${res.name}.`,
+                            });
+                        }
+                    }
+                }
             }
+        };
 
-            return false;
-        });
+        const interval = setInterval(checkRemindersAndExpiry, 60000); // Check every minute
+        checkRemindersAndExpiry(); // Initial check
 
-        // Batch auto-cancel
-        expiredReservations.forEach(async (res) => {
-            try {
-                await updateDoc(doc(db, "reservations", res.id), {
-                    status: "cancelled",
-                    cancelReason: "auto_expired",
-                    updatedAt: new Date()
-                });
-                console.log(`[Auto-Cancel] Expired: ${res.name} (${res.date} ${res.time})`);
-            } catch (err) {
-                console.error("[Auto-Cancel] Failed for", res.id, err);
-            }
-        });
-
-        if (expiredReservations.length > 0) {
-            toast({
-                title: "Auto-Cleanup",
-                description: `${expiredReservations.length} expired reservation(s) marked as cancelled.`,
-            });
-        }
+        return () => clearInterval(interval);
     }, [reservations]);
 
     const openApprovalModal = async (reservation: any) => {
@@ -270,7 +298,18 @@ const Reservations = () => {
     const handleUpdateStatus = async (id: string, newStatus: string) => {
         try {
             const resRef = doc(db, "reservations", id);
-            await updateDoc(resRef, { status: newStatus });
+            const now = new Date();
+            const updateData: any = {
+                status: newStatus,
+                updatedAt: now
+            };
+
+            // Set specific timestamps based on status
+            if (newStatus === "arrived") updateData.arrivedAt = now;
+            if (newStatus === "active") updateData.activeAt = now;
+            if (newStatus === "completed") updateData.completedAt = now;
+
+            await updateDoc(resRef, updateData);
 
             const res = reservations.find(r => r.id === id);
             if (res && res.tableId) {
@@ -445,18 +484,22 @@ const Reservations = () => {
                                     const columns = [
                                         { key: "name", label: "Name" },
                                         { key: "email", label: "Email" },
+                                        { key: "phone", label: "Phone" },
                                         { key: "date", label: "Date" },
                                         { key: "time", label: "Time" },
-                                        { key: "guests", label: "Guests" },
+                                        { key: "guests", label: "Guest Count" },
                                         { key: "location", label: "Location" },
-                                        { key: "status", label: "Status" },
-                                        { key: "tableMarking", label: "Table" },
-                                        { key: "createdAt", label: "Requested At" },
-                                        { key: "approvedAt", label: "Approved At" },
-                                        { key: "arrivedAt", label: "Arrived At" },
-                                        { key: "completedAt", label: "Completed At" },
-                                        { key: "freedAt", label: "Freed At" },
-                                        { key: "arrivalNote", label: "Arrival Note" },
+                                        { key: "status", label: "Current Status" },
+                                        { key: "tableMarking", label: "Table Assigned" },
+                                        { key: "createdAt", label: "Booking Request Time" },
+                                        { key: "approvedAt", label: "Approval Time" },
+                                        { key: "reminderSentAt", label: "Reminder Notification Time" },
+                                        { key: "arrivedAt", label: "Arrived Time" },
+                                        { key: "activeAt", label: "Seated/Active Time" },
+                                        { key: "completedAt", label: "Completed Time" },
+                                        { key: "freedAt", label: "Table Freed Time" },
+                                        { key: "arrivalNote", label: "Timing Notes" },
+                                        { key: "checkInToken", label: "QR Token" },
                                     ];
                                     const headers = columns.map(c => c.label).join(",");
                                     const rows = filteredReservations.map(item =>

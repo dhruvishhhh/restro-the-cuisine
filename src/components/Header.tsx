@@ -95,7 +95,7 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className={`md:hidden relative z-[70] p-2 ${mobileOpen ? 'text-gold' : scrolled || !isHomePage ? 'text-primary' : 'text-primary-foreground'}`}
+            className={`md:hidden relative z-[70] p-2 ${mobileOpen ? 'text-gold' : scrolled || !isHomePage ? 'text-gold' : 'text-gold'}`}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
