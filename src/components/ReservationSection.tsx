@@ -20,6 +20,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
   const navigate = useNavigate();
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [loading, setLoading] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [pauseReason, setPauseReason] = useState("default");
   const [submitted, setSubmitted] = useState(false);
@@ -111,7 +112,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
         description: "Your sanctuary request is being reviewed. Check status on our tracking page.",
       });
 
-      setTimeout(() => navigate("/"), 2500);
+      setTimeout(() => navigate("/"), 6000);
     } catch (error: any) {
       console.error("Error saving reservation:", error);
       toast({
@@ -136,16 +137,16 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-card/5 border border-gold/20 p-8 md:p-12 rounded-xl text-center max-w-2xl mx-auto backdrop-blur-sm my-6 md:my-12"
+        className="bg-primary border border-gold/20 p-8 md:p-12 rounded-xl text-center max-w-2xl mx-auto backdrop-blur-sm my-6 md:my-12"
       >
         <div className="w-12 h-12 md:w-16 md:h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 border border-gold/30">
           <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-gold animate-pulse" />
         </div>
-        <h3 className="section-heading text-xl md:text-2xl mb-3 md:mb-4">Request Sent Successfully</h3>
-        <p className="text-primary-foreground/70 font-sans leading-relaxed mb-4 text-sm">
+        <h3 className="section-heading text-xl md:text-2xl mb-3 md:mb-4 text-primary-foreground">Request Sent Successfully</h3>
+        <p className="text-primary-foreground/80 font-sans leading-relaxed mb-4 text-sm">
           Your sanctuary request has been submitted. <span className="text-gold font-bold">You will receive a confirmation or status update email shortly</span> once our monks review the schedule.
         </p>
-        <p className="text-primary-foreground/40 text-[10px] uppercase tracking-widest mt-6 md:mt-8">
+        <p className="text-gold/60 text-[10px] uppercase tracking-widest mt-6 md:mt-8">
           Redirecting to home in a moment...
         </p>
       </motion.div>
@@ -273,7 +274,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
               {/* Row 3 */}
               <div className="space-y-1">
                 <label className={labelClasses}>Select Date</label>
-                <Popover>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
                     <button
                       type="button"
@@ -291,7 +292,10 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={setDate}
+                      onSelect={(selectedDate) => {
+                        setDate(selectedDate);
+                        setCalendarOpen(false);
+                      }}
                       disabled={(date) =>
                         date < new Date(new Date().setHours(0, 0, 0, 0)) || date > new Date(new Date().setMonth(new Date().getMonth() + 1))
                       }
