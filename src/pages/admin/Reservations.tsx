@@ -235,7 +235,7 @@ const Reservations = () => {
                 check_in_token: checkInToken,
             });
 
-            // Send ONE automated email via EmailJS (template uses qr_code_url)
+            // Send ONE automated email via EmailJS (double-click guard prevents duplicates)
             const emailSent = await sendApprovalEmail({
                 to_email: updatedRes.email,
                 to_name: updatedRes.name,
@@ -245,6 +245,7 @@ const Reservations = () => {
                 location: updatedRes.location,
                 table_marking: selectedTable.marking,
                 check_in_token: checkInToken,
+                html_content: emailHtml,
             });
 
             setSelectedResForApproval(null);
