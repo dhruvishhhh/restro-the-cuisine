@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, Move, Save, Edit2, Grid, Layers, Download } from "lucide-react";
+import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, Move, Save, Edit2, Grid, Layers, Download, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { format, isSameDay } from "date-fns";
 import { generateTimeSlots, getPreviousSlot, getCurrentSlot, isSlotInRange, normalizeTimeTo24h } from "@/lib/timeSlots";
@@ -1203,9 +1203,24 @@ const Tables = () => {
                                         <CardContent className="space-y-6">
                                             {currentReservation ? (
                                                 <div className="p-4 rounded-xl bg-sage/10 border border-sage/20">
-                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-sage mb-2">Current Occupant</p>
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-sage">Current Occupant</p>
+                                                        {currentReservation.arrivedAt && (
+                                                            <span className="text-[9px] font-black opacity-40 uppercase">
+                                                                Since {format(currentReservation.arrivedAt.toDate ? currentReservation.arrivedAt.toDate() : new Date(currentReservation.arrivedAt), "HH:mm")}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <p className="text-sm font-bold">{currentReservation.name}</p>
                                                     <p className="text-xs text-muted-foreground">{currentReservation.guests} Guests • {currentReservation.phone}</p>
+
+                                                    {currentReservation.arrivalNote && (
+                                                        <div className={`mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest ${currentReservation.arrivalNote.includes("Too") ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"}`}>
+                                                            <Clock className="w-3 h-3" />
+                                                            {currentReservation.arrivalNote}
+                                                        </div>
+                                                    )}
+
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
@@ -1346,6 +1361,12 @@ const Tables = () => {
                                                                     </span>
                                                                 </div>
                                                                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{table.location}</p>
+                                                                {reservation?.arrivalNote && (
+                                                                    <div className={`mt-1 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter ${reservation.arrivalNote.includes("Too") ? "text-red-500" : "text-emerald-600"}`}>
+                                                                        <Clock className="w-2.5 h-2.5" />
+                                                                        {reservation.arrivalNote}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
 

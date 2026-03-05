@@ -213,13 +213,14 @@ const Reservations = () => {
             const checkInToken = Math.random().toString(36).substring(2, 6).toUpperCase() +
                 Math.random().toString(36).substring(2, 6).toUpperCase();
 
+            const now = new Date();
             await updateDoc(doc(db, "reservations", selectedResForApproval.id), {
                 status: "approved",
                 tableId: selectedTable.id,
                 tableMarking: selectedTable.marking,
                 checkInToken: checkInToken,
-                approvedAt: new Date(),
-                updatedAt: new Date(),
+                approvedAt: now,
+                updatedAt: now,
             });
 
             const updatedRes = { ...selectedResForApproval, status: 'approved', tableMarking: selectedTable.marking, checkInToken };
@@ -579,8 +580,16 @@ const Reservations = () => {
                                                             </div>
 
                                                             {res.tableMarking && (
-                                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-md w-fit ring-1 ring-primary/5">
-                                                                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Marked Table: {res.tableMarking}</span>
+                                                                <div className="flex flex-wrap items-center gap-2">
+                                                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-md ring-1 ring-primary/5">
+                                                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Marked Table: {res.tableMarking}</span>
+                                                                    </div>
+                                                                    {res.arrivalNote && (
+                                                                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest ${res.arrivalNote.includes("Too") ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"}`}>
+                                                                            <Clock className="w-3 h-3" />
+                                                                            {res.arrivalNote}
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             )}
 
