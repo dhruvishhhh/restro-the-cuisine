@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LayoutDashboard, Users, Plus, Trash2, MapPin, Loader2, Calendar, Map as MapIcon, Move, Save, Edit2, Grid, Layers, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { format, isSameDay } from "date-fns";
-import { generateTimeSlots, getPreviousSlot, getCurrentSlot, isSlotInRange } from "@/lib/timeSlots";
+import { generateTimeSlots, getPreviousSlot, getCurrentSlot, isSlotInRange, normalizeTimeTo24h } from "@/lib/timeSlots";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 
@@ -128,6 +128,7 @@ const Tables = () => {
     const [viewSlot, setViewSlot] = useState(getCurrentSlot());
     const [viewDate, setViewDate] = useState(format(new Date(), "yyyy-MM-dd"));
     const [isLiveSlot, setIsLiveSlot] = useState(true);
+    const [currentTime, setCurrentTime] = useState(new Date());
     const [reservations, setReservations] = useState<any[]>([]);
     const [zoom, setZoom] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -217,9 +218,61 @@ const Tables = () => {
             const today = format(new Date(), "yyyy-MM-dd");
             setViewSlot(currentSlot);
             setViewDate(today);
-        }, 30000); // Check every 30 seconds
+        }, 30000);
         return () => clearInterval(interval);
     }, [isLiveSlot]);
+
+    // Live clock - updates every second
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Auto-release tables when reservation hold period (90 min) expires
+    useEffect(() => {
+        if (reservations.length === 0) return;
+        const now = new Date();
+        const todayStr = format(now, "yyyy-MM-dd");
+        const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+        const HOLD_DURATION = 90; // minutes
+
+        reservations.forEach(async (res) => {
+            // Only process arrived/active reservations for today
+            if (res.date !== todayStr) return;
+            if (res.status !== "arrived" && res.status !== "active") return;
+            if (!res.tableId || !res.time) return;
+
+            const normalizedTime = normalizeTimeTo24h(res.time);
+            const [h, m] = normalizedTime.split(":").map(Number);
+            const resStartMin = h * 60 + m;
+            const resEndMin = resStartMin + HOLD_DURATION;
+
+            // If current time is past the hold period, auto-free
+            if (currentTotalMin >= resEndMin) {
+                try {
+                    // Free the table slot
+                    const slotDocId = `${res.tableId}_${res.date}_${res.time}`;
+                    await setDoc(doc(db, "table_slots", slotDocId), {
+                        tableId: res.tableId,
+                        date: res.date,
+                        slot: res.time,
+                        status: "available",
+                        updatedAt: new Date()
+                    }, { merge: true });
+
+                    // Mark reservation as completed
+                    await updateDoc(doc(db, "reservations", res.id), {
+                        status: "completed",
+                        updatedAt: new Date()
+                    });
+
+                    console.log(`[Auto-Free] Table freed: ${res.tableId} for ${res.name} (${res.time} + ${HOLD_DURATION}min expired)`);
+                } catch (err) {
+                    console.error("[Auto-Free] Failed:", err);
+                }
+            }
+        });
+    }, [reservations, currentTime]);
 
     // Handle non-passive wheel listener to prevent page scroll
     useEffect(() => {
@@ -649,6 +702,16 @@ const Tables = () => {
                                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">Operational Layout Management</p>
                             </div>
                             <div className="h-10 w-px bg-border hidden md:block" />
+                            {/* Live Clock */}
+                            <div className="bg-emerald-500/5 px-4 py-2 rounded-xl border border-emerald-500/20">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                    <span className="text-[9px] text-emerald-600 uppercase tracking-widest font-bold">Live Now</span>
+                                </div>
+                                <span className="text-lg font-black text-foreground tabular-nums">
+                                    {currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })}
+                                </span>
+                            </div>
                             <div className="bg-primary/5 px-4 py-2 rounded-xl border border-primary/10">
                                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold block mb-1">Total Tables</span>
                                 <span className="text-xl font-bold text-primary">{filteredTables.length} / {tables.length}</span>
