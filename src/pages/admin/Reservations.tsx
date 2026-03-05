@@ -451,6 +451,12 @@ const Reservations = () => {
                                         { key: "location", label: "Location" },
                                         { key: "status", label: "Status" },
                                         { key: "tableMarking", label: "Table" },
+                                        { key: "createdAt", label: "Requested At" },
+                                        { key: "approvedAt", label: "Approved At" },
+                                        { key: "arrivedAt", label: "Arrived At" },
+                                        { key: "completedAt", label: "Completed At" },
+                                        { key: "freedAt", label: "Freed At" },
+                                        { key: "arrivalNote", label: "Arrival Note" },
                                     ];
                                     const headers = columns.map(c => c.label).join(",");
                                     const rows = filteredReservations.map(item =>
@@ -577,6 +583,11 @@ const Reservations = () => {
                                                                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
                                                                     <MapPin className="w-3 h-3 text-terracotta" /> {res.location.split(',')[0]}
                                                                 </div>
+                                                                {res.createdAt && (
+                                                                    <div className="flex items-center gap-2 text-[9px] text-muted-foreground/60 italic font-medium col-span-2 sm:col-span-3 border-t border-border/30 pt-1 mt-1">
+                                                                        Requested at: {res.createdAt.toDate ? res.createdAt.toDate().toLocaleString() : new Date(res.createdAt).toLocaleString()}
+                                                                    </div>
+                                                                )}
                                                             </div>
 
                                                             {res.tableMarking && (

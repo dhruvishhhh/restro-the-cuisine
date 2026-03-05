@@ -259,6 +259,7 @@ const Tables = () => {
                         updatedAt: new Date()
                     }, { merge: true });
 
+                    // Also mark the reservation as completed with precision timestamps
                     await updateDoc(doc(db, "reservations", res.id), {
                         status: "completed",
                         completedAt: new Date(),
@@ -1213,6 +1214,12 @@ const Tables = () => {
                                                     </div>
                                                     <p className="text-sm font-bold">{currentReservation.name}</p>
                                                     <p className="text-xs text-muted-foreground">{currentReservation.guests} Guests • {currentReservation.phone}</p>
+
+                                                    {currentReservation.createdAt && (
+                                                        <p className="text-[9px] text-muted-foreground/60 italic mt-1 border-t border-border/20 pt-1">
+                                                            Requested at: {currentReservation.createdAt.toDate ? currentReservation.createdAt.toDate().toLocaleString() : new Date(currentReservation.createdAt).toLocaleString()}
+                                                        </p>
+                                                    )}
 
                                                     {currentReservation.arrivalNote && (
                                                         <div className={`mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest ${currentReservation.arrivalNote.includes("Too") ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"}`}>
