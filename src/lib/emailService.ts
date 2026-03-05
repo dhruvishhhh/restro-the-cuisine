@@ -22,7 +22,7 @@ export interface ApprovalEmailData {
 }
 
 export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolean> => {
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.check_in_token)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(data.check_in_token)}&color=000000&bgcolor=FFFFFF&margin=20&format=png&qzone=4`;
 
   const templateParams = {
     to_email: data.to_email,
@@ -51,7 +51,7 @@ export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolea
  * Generate the HTML email body for manual copy/send.
  */
 export const generateApprovalEmailHTML = (data: ApprovalEmailData): string => {
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.check_in_token)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(data.check_in_token)}&color=000000&bgcolor=FFFFFF&margin=20&format=png&qzone=4`;
 
   return `
 <!DOCTYPE html>
@@ -94,10 +94,10 @@ export const generateApprovalEmailHTML = (data: ApprovalEmailData): string => {
             </tr>
           </table>
           <!-- QR Code -->
-          <div style="text-align:center;padding:30px;background:#f5f0eb;border-radius:12px;margin-bottom:30px;">
-            <p style="color:#1a1a1a;font-size:9px;text-transform:uppercase;letter-spacing:3px;font-weight:bold;margin:0 0 16px;font-family:sans-serif;">Your Entry Pass</p>
-            <img src="${qrCodeUrl}" alt="Entry QR Code" width="200" height="200" style="display:block;margin:0 auto 12px;" />
-            <p style="color:#666;font-size:11px;margin:0;font-style:italic;">Present this QR code at the entrance for seamless check-in.</p>
+          <div style="text-align:center;padding:40px;background:#FFFFFF;border-radius:16px;margin-bottom:30px;border:3px solid #e0e0e0;">
+            <p style="color:#1a1a1a;font-size:9px;text-transform:uppercase;letter-spacing:3px;font-weight:bold;margin:0 0 20px;font-family:sans-serif;">Your Entry Pass</p>
+            <img src="${qrCodeUrl}" alt="Entry QR Code" width="250" height="250" style="display:block;margin:0 auto 16px;border:2px solid #f0f0f0;border-radius:8px;" />
+            <p style="color:#555;font-size:11px;margin:0;font-style:italic;">Present this QR code at the entrance for seamless check-in.</p>
           </div>
           <p style="color:#a0998f;font-size:14px;line-height:1.7;margin:0;">We look forward to hosting you at our sanctuary. Namaste.</p>
         </td></tr>

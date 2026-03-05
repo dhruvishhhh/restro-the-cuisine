@@ -67,6 +67,13 @@ const Reservations = () => {
 
     const navigate = useNavigate();
     const { toast } = useToast();
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    // Live clock - updates every minute
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -93,6 +100,57 @@ const Reservations = () => {
             unsubscribeLocations();
         };
     }, [navigate]);
+
+    // Auto-cancel expired reservations (past date+time with no action taken)
+    useEffect(() => {
+        if (reservations.length === 0) return;
+
+        const now = new Date();
+        const todayStr = format(now, "yyyy-MM-dd");
+        const currentHour = now.getHours();
+        const currentMin = now.getMinutes();
+        const currentTotalMin = currentHour * 60 + currentMin;
+
+        const expiredReservations = reservations.filter(res => {
+            // Only auto-cancel pending or approved reservations
+            if (res.status !== "pending" && res.status !== "approved") return false;
+
+            // If the reservation date is before today → expired
+            if (res.date < todayStr) return true;
+
+            // If the reservation date is today, check if the time slot has passed
+            if (res.date === todayStr) {
+                const normalizedTime = normalizeTimeTo24h(res.time);
+                const [h, m] = normalizedTime.split(":").map(Number);
+                const slotTotalMin = h * 60 + m;
+                // Consider expired if we're more than 30 min past the slot
+                return currentTotalMin > (slotTotalMin + 30);
+            }
+
+            return false;
+        });
+
+        // Batch auto-cancel
+        expiredReservations.forEach(async (res) => {
+            try {
+                await updateDoc(doc(db, "reservations", res.id), {
+                    status: "cancelled",
+                    cancelReason: "auto_expired",
+                    updatedAt: new Date()
+                });
+                console.log(`[Auto-Cancel] Expired: ${res.name} (${res.date} ${res.time})`);
+            } catch (err) {
+                console.error("[Auto-Cancel] Failed for", res.id, err);
+            }
+        });
+
+        if (expiredReservations.length > 0) {
+            toast({
+                title: "Auto-Cleanup",
+                description: `${expiredReservations.length} expired reservation(s) marked as cancelled.`,
+            });
+        }
+    }, [reservations]);
 
     const openApprovalModal = async (reservation: any) => {
         try {
@@ -299,7 +357,15 @@ const Reservations = () => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h2 className="text-2xl md:text-3xl font-bold text-foreground">Reservations</h2>
-                            <p className="text-sm text-muted-foreground">Detailed categorized bookings tracking.</p>
+                            <div className="flex items-center gap-3 mt-1">
+                                <p className="text-sm text-muted-foreground">Detailed categorized bookings tracking.</p>
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-sage/10 border border-sage/20 rounded-full">
+                                    <div className="w-1.5 h-1.5 bg-sage rounded-full animate-pulse" />
+                                    <span className="text-[10px] font-black text-sage uppercase tracking-wider">
+                                        {currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-2">
