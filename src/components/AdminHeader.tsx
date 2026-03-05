@@ -3,7 +3,7 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, onSnapshot, query, where, Timestamp } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { Bell, User, Users, LogOut, CheckCircle2 } from "lucide-react";
+import { Bell, User, Users, LogOut, CheckCircle2, Clock } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -19,8 +19,15 @@ import { useToast } from "@/hooks/use-toast";
 const AdminHeader = () => {
     const [user, setUser] = useState<any>(null);
     const [onlineAdmins, setOnlineAdmins] = useState<any[]>([]);
+    const [currentTime, setCurrentTime] = useState(new Date());
     const navigate = useNavigate();
     const { toast } = useToast();
+
+    // Live clock - updates every second
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -101,6 +108,23 @@ const AdminHeader = () => {
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">
                     Central Management System
                 </p>
+            </div>
+
+            {/* Live IST Clock */}
+            <div className="hidden sm:flex items-center gap-3 bg-muted/30 border border-border rounded-xl px-4 py-2">
+                <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">IST Live</span>
+                </div>
+                <div className="h-6 w-px bg-border" />
+                <div className="flex flex-col items-end -space-y-0.5">
+                    <span className="text-sm font-black text-foreground tabular-nums">
+                        {currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground font-bold">
+                        {currentTime.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
+                    </span>
+                </div>
             </div>
 
             <div className="flex items-center gap-6">

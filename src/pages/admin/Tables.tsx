@@ -125,7 +125,7 @@ const Tables = () => {
     const [newTable, setNewTable] = useState({ marking: "", capacity: "", location: "", shape: "square" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [viewSlot, setViewSlot] = useState(timeSlots[0]);
+    const [viewSlot, setViewSlot] = useState(getCurrentSlot());
     const [viewDate, setViewDate] = useState(format(new Date(), "yyyy-MM-dd"));
     const [reservations, setReservations] = useState<any[]>([]);
     const [zoom, setZoom] = useState(1);
