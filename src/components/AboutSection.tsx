@@ -46,7 +46,7 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             <div className="w-12 h-px bg-gold" />
             <p className="text-muted-foreground leading-relaxed text-base md:text-lg font-sans">
               Born from a deep reverence for the earth and the art of mindful
-              dining, House of Earth Monk is a sanctuary where every detail —
+              dining, The House of Earthmonk is a space where every detail —
               from the bamboo ceilings to the hand-thrown ceramics — tells a
               story of conscious creation.
             </p>

@@ -13,7 +13,7 @@ const TrackSection = () => {
                         <div className="flex-1">
                             <span className="text-gold uppercase tracking-[0.3em] text-[10px] font-bold mb-4 block">Reservation Status</span>
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-primary-foreground mb-6 leading-tight">
-                                Track Your <br className="hidden md:block" /> Sanctuary Request
+                                Track Your <br className="hidden md:block" />The House of Earthmonk Request
                             </h2>
                             <p className="text-primary-foreground/60 font-sans text-sm md:text-base mb-8 max-w-md">
                                 Enter your phone number to check the real-time status of your table reservation and view assigned seating.

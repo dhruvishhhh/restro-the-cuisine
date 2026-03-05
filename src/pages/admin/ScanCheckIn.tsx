@@ -532,7 +532,7 @@ const ScanCheckIn = () => {
                                     </div>
                                     <div className="w-40 h-1 rounded-full bg-gradient-to-r from-transparent via-border to-transparent" />
                                     <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.5em] mt-4">
-                                        Earth Monk Sanctuary
+                                        The House of Earthmonk
                                     </p>
                                 </div>
                             )}

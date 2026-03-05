@@ -64,11 +64,11 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
           <a href="/" className="flex items-center gap-2 group">
             <EarthMonkLogo className="w-10 h-10 md:w-12 md:h-12" />
             <div className="flex flex-col">
-              <span className="font-serif text-base md:text-xl font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
-                EARTH MONK
+              <span className="font-serif text-sm md:text-lg font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
+                THE HOUSE OF
               </span>
-              <span className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] text-gold/60 -mt-1">
-                SANCTUARY
+              <span className="text-[10px] md:text-[12px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
+                EARTHMONK
               </span>
             </div>
           </a>

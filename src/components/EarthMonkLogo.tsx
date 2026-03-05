@@ -9,7 +9,7 @@ const EarthMonkLogo = ({ className = "w-full h-full" }: { className?: string }) 
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-full h-full drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]"
             >
-                {/* Main Icon - Stylized Monk/Sanctuary Body */}
+                {/* Main Icon - Stylized The House of Earthmonk Body */}
                 <path
                     d="M100 220L200 80L300 220H100Z"
                     fill="#1A1512"

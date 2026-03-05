@@ -723,7 +723,7 @@ const Reservations = () => {
                             <div className="space-y-6 pt-4">
                                 <div className="p-4 bg-background border border-border rounded-lg space-y-4 text-sm font-serif">
                                     <div className="space-y-2">
-                                        <p className="font-bold">Subject: Your Reservation at Earth Monk Sanctuary is Approved!</p>
+                                        <p className="font-bold">Subject: Your Reservation at The House of Earthmonk is Approved!</p>
                                         <p>Dear {selectedResForEmail?.name},</p>
                                         <p>We are delighted to confirm your reservation at our <strong>{selectedResForEmail?.location}</strong> sanctuary.</p>
                                     </div>
@@ -746,7 +746,7 @@ const Reservations = () => {
                                     <p>We look forward to hosting you soon!</p>
                                     <p className="text-xs text-muted-foreground">Warmly,<br />The House of Earth Monk</p>
                                 </div>
-                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`Earth Monk Sanctuary Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${formatToAmPm(selectedResForEmail.time)}.\nPlease use the provided QR pass for entry.`)}>
+                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`The House of Earthmonk Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${formatToAmPm(selectedResForEmail.time)}.\nPlease use the provided QR pass for entry.`)}>
                                     <Copy className="w-4 h-4" /> Copy Email Text
                                 </Button>
                             </div>

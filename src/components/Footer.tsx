@@ -36,9 +36,9 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h3 className="font-serif text-2xl text-gold gold-glow mb-4">
-              House of
+              The House of
               <br />
-              Earth Monk
+              Earthmonk
             </h3>
             <p className="text-primary-foreground/40 font-sans text-sm leading-relaxed">
               Rooted in Earth.
@@ -83,7 +83,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="pt-12 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-primary-foreground/30 font-sans text-xs">
-            © 2024 House of Earth Monk. All rights reserved.
+            © 2024 The House of Earthmonk. All rights reserved.
           </p>
         </div>
       </div>

@@ -94,7 +94,7 @@ const AdminDataCenter = () => {
                     </div>
                     <div>
                         <CardTitle>Data Export Center</CardTitle>
-                        <CardDescription>Download your sanctuary data for offline management.</CardDescription>
+                        <CardDescription>Download your central data for offline management.</CardDescription>
                     </div>
                 </div>
             </CardHeader>

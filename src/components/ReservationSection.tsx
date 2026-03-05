@@ -144,7 +144,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
         </div>
         <h3 className="section-heading text-xl md:text-2xl mb-3 md:mb-4 text-primary-foreground">Request Sent Successfully</h3>
         <p className="text-primary-foreground/80 font-sans leading-relaxed mb-4 text-sm">
-          Your sanctuary request has been submitted. <span className="text-gold font-bold">You will receive a confirmation or status update email shortly</span> once our monks review the schedule.
+          The House of Earthmonk request has been submitted. <span className="text-gold font-bold">You will receive a confirmation or status update email shortly</span> once our monks review the schedule.
         </p>
         <p className="text-gold/60 text-[10px] uppercase tracking-widest mt-6 md:mt-8">
           Redirecting to home in a moment...

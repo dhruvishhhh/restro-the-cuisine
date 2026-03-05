@@ -6,8 +6,16 @@ const locations = [
   {
     name: "Anand",
     city: "Gujarat",
-    address: "Earth Monk Sanctuary, near Amul Dairy Road",
-    hours: "8:00 AM – 11:00 PM",
+    address: "The House of Earthmonk, near Amul Dairy Road",
+    hours: "11:00 AM – 11:00 PM",
+    mapLink: "https://maps.app.goo.gl/x8ZDg1hwzR7gSJUv6"
+  },
+  {
+    name: "Vadodara",
+    city: "Gujarat",
+    address: "The House of Earthmonk, Vadodara",
+    hours: "11:00 AM – 11:00 PM",
+    mapLink: "https://maps.app.goo.gl/pzJaAyTHi8DjG1nM7"
   },
 ];
 
@@ -48,9 +56,17 @@ const LocationsSection = () => {
               <p className="text-muted-foreground font-sans text-sm mb-2">
                 {loc.address}
               </p>
-              <p className="text-muted-foreground font-sans text-xs uppercase tracking-wider">
+              <p className="text-muted-foreground font-sans text-xs uppercase tracking-wider mb-6">
                 {loc.hours}
               </p>
+              <a
+                href={loc.mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block py-2 px-6 border border-gold/20 text-gold uppercase tracking-[0.2em] text-[10px] font-sans font-bold hover:bg-gold/10 transition-all"
+              >
+                View Map
+              </a>
             </motion.div>
           ))}
         </div>

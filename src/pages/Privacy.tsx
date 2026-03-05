@@ -24,7 +24,7 @@ const Privacy = () => {
                         <section>
                             <h2 className="text-2xl font-serif text-foreground mb-4">1. Sanctuary of Data</h2>
                             <p>
-                                At Earth Monk Sanctuary, we treat your personal information with the same reverence we give our sanctuary grounds.
+                                At The House of Earthmonk, we treat your personal information with the same reverence we give our sanctuary grounds.
                                 We only collect what is necessary to facilitate your journey with us—specifically your name, phone number, and dining preferences.
                             </p>
                         </section>

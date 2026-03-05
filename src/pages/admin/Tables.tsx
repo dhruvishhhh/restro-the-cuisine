@@ -954,7 +954,7 @@ const Tables = () => {
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
                                         <Layers className="w-5 h-5 text-accent" />
-                                        Sanctuary Seating Plan
+                                        The House of Earthmonk Seating Plan
                                     </CardTitle>
                                     <CardDescription>Arrange and align your units with precision.</CardDescription>
                                 </div>

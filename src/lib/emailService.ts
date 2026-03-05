@@ -35,7 +35,7 @@ export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolea
     qr_code_url: qrCodeUrl,
     check_in_token: data.check_in_token,
     html_content: data.html_content || "", // Pass the rich HTML if provided
-    subject: "Your Reservation at Earth Monk Sanctuary is Approved!",
+    subject: "Your Reservation at The House of Earthmonk is Approved!",
   };
 
   try {
@@ -63,7 +63,7 @@ export const generateApprovalEmailHTML = (data: ApprovalEmailData): string => {
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#2a2a2a;border:1px solid #3a3a3a;border-radius:12px;overflow:hidden;">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d3a2e,#1a1a1a);padding:40px 40px 30px;text-align:center;">
-          <p style="color:#c4a86b;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;">Earth Monk Sanctuary</p>
+          <p style="color:#c4a86b;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;">The House of Earthmonk</p>
           <h1 style="color:#f5f0eb;font-size:24px;margin:0;font-weight:normal;">Your Reservation is Confirmed</h1>
         </td></tr>
         <!-- Body -->

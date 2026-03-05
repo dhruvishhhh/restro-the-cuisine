@@ -135,7 +135,7 @@ const AdminLocations = () => {
                 <div className="p-6 space-y-6">
                     <div>
                         <h2 className="text-3xl font-bold text-foreground">Location Management</h2>
-                        <p className="text-muted-foreground">Add and manage restaurant sanctuary locations.</p>
+                        <p className="text-muted-foreground">Add and manage restaurant and cafe locations.</p>
                     </div>
 
                     <div className="grid lg:grid-cols-3 gap-6">

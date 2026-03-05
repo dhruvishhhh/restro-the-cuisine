@@ -40,7 +40,7 @@ const AdminHeader = () => {
         const q = query(collection(db, "admin_presence"));
         const unsubscribePresence = onSnapshot(q, (snapshot) => {
             const now = Date.now();
-            const THREE_MINUTES = 3 * 60 * 1000;
+            const ONE_MINUTE = 60 * 1000;
 
             let admins = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() } as any))
@@ -50,7 +50,7 @@ const AdminHeader = () => {
                         ? admin.lastSeen.toMillis()
                         : (typeof admin.lastSeen === 'number' ? admin.lastSeen : Date.now());
 
-                    return Math.abs(now - lastSeenTime) < THREE_MINUTES;
+                    return Math.abs(now - lastSeenTime) < ONE_MINUTE;
                 });
 
             // Ensure current user is in the list even if server hasn't reflected heartbeat yet
@@ -103,10 +103,10 @@ const AdminHeader = () => {
 
             <div className="flex flex-col">
                 <h1 className="text-xl font-bold font-serif text-foreground">
-                    Earth Monk <span className="text-accent underline decoration-accent/30 underline-offset-4">Sanctuary</span>
+                    The House of <span className="text-accent underline decoration-accent/30 underline-offset-4">Earthmonk</span>
                 </h1>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">
-                    Central Management System
+                    Central Management System • Vadodara & Anand
                 </p>
             </div>
 
@@ -165,9 +165,16 @@ const AdminHeader = () => {
                                                 <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Administrator</span>
                                             </div>
                                         </div>
-                                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] font-bold px-2 py-0 h-5">
-                                            LIVE NOW
-                                        </Badge>
+                                        {admin.email?.toLowerCase() === user?.email?.toLowerCase() ? (
+                                            <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 text-[9px] font-bold px-2 py-0 h-5">
+                                                YOU
+                                            </Badge>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                                <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-tighter">Active</span>
+                                            </div>
+                                        )}
                                     </div>
                                 ))
                             )}
@@ -249,7 +256,9 @@ const AdminHeader = () => {
 
                     <div className="hidden md:flex flex-col items-start -space-y-1">
                         <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Signed in as</p>
-                        <p className="text-sm font-bold text-primary">Master Admin</p>
+                        <p className="text-sm font-bold text-primary truncate max-w-[120px] capitalize">
+                            {user?.email?.split('@')[0].replace(/[._-]/g, ' ') || "Admin"}
+                        </p>
                     </div>
                 </div>
             </div>

@@ -28,9 +28,9 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
             Est. 2024
           </h2>
           <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl font-medium text-primary-foreground gold-glow tracking-tight leading-[1.1]">
-            House of
+            The House of
             <br />
-            Earth Monk
+            Earthmonk
           </h1>
         </motion.div>
 

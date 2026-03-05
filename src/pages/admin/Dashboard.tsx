@@ -346,8 +346,8 @@ const Dashboard = () => {
 
                             <Card className="border-border bg-card shadow-sm hover:shadow-md transition-shadow">
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Sanctuary Control</CardTitle>
-                                    <CardDescription>Advanced location and sanctuary management.</CardDescription>
+                                    <CardTitle className="text-lg">The House of Earthmonk Control</CardTitle>
+                                    <CardDescription>Advanced location and The House of Earthmonk management.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <Dialog open={isPassDialogOpen} onOpenChange={setIsPassDialogOpen}>

@@ -39,7 +39,7 @@ const Login = () => {
 
             toast({
                 title: "Welcome back!",
-                description: "Successfully logged in to the Sanctuary Admin Panel.",
+                description: "Successfully logged in to The House of Earthmonk Admin Panel.",
             });
             navigate("/admin");
         } catch (error: any) {

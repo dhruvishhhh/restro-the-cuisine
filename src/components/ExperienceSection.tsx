@@ -38,7 +38,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
         >
           <span className="section-subheading text-gold/80">The Experience</span>
           <h2 className="section-heading text-primary-foreground mt-4">
-            A Sanctuary for the Senses
+            An Earthmonk Experience for the Senses
           </h2>
         </motion.div>
 

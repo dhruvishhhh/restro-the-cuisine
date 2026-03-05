@@ -24,7 +24,7 @@ const Terms = () => {
                         <section>
                             <h2 className="text-2xl font-serif text-foreground mb-4">1. Respect for the Sanctuary</h2>
                             <p>
-                                By accessing the Earth Monk Sanctuary website, you agree to treat this digital space with respect.
+                                By accessing the The House of Earthmonk website, you agree to treat this digital space with respect.
                                 Our content is a reflection of our soul; please do not reproduce or use our imagery without permission.
                             </p>
                         </section>
@@ -48,7 +48,7 @@ const Terms = () => {
                         <section>
                             <h2 className="text-2xl font-serif text-foreground mb-4">4. Limitation of Liability</h2>
                             <p>
-                                While we provide a nourishing experience, Earth Monk Sanctuary is not liable for disruptions beyond our control.
+                                While we provide a nourishing experience, The House of Earthmonk is not liable for disruptions beyond our control.
                                 We provide our services "as is" and encourage you to embrace the flow of the experience.
                             </p>
                         </section>
