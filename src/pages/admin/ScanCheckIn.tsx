@@ -139,15 +139,23 @@ const ScanCheckIn = () => {
 
             // Time difference calculation
             const now = new Date();
-            const todayStr = format(now, "yyyy-MM-dd");
-            const resTime24 = normalizeTimeTo24h(reservation.time);
-            const resDateTime = parse(`${todayStr} ${resTime24}`, "yyyy-MM-dd HH:mm", new Date());
-            const diffMinutes = differenceInMinutes(now, resDateTime);
+            const resDateStr = reservation.date || format(now, "yyyy-MM-dd");
+            const resTime24 = normalizeTimeTo24h(reservation.time || "12:00 PM");
+            
+            let diffMinutes = 0;
+            try {
+                const resDateTime = parse(`${resDateStr} ${resTime24}`, "yyyy-MM-dd HH:mm", new Date());
+                diffMinutes = differenceInMinutes(now, resDateTime);
+            } catch (e) {
+                console.warn("[Scanner] Date parsing error:", e);
+            }
 
             let arrivalMessage = "";
             let isWarning = false;
 
-            if (Math.abs(diffMinutes) <= 30) {
+            if (isNaN(diffMinutes)) {
+                arrivalMessage = "Time invalid / unscheduled arrival.";
+            } else if (Math.abs(diffMinutes) <= 30) {
                 if (diffMinutes < 0) {
                     arrivalMessage = `${Math.abs(diffMinutes)} minutes early.`;
                 } else if (diffMinutes > 0) {
@@ -164,16 +172,19 @@ const ScanCheckIn = () => {
                 }
             }
 
-            // Auto-arrival update
-            if (reservation.status === "approved") {
+            // Auto-arrival update / Resurrect late reservations
+            if (["approved", "pending"].includes(reservation.status) || 
+                (reservation.status === "cancelled" && reservation.cancelReason === "auto_expired")) {
+                
                 await updateDoc(doc(db, "reservations", reservation.id), {
                     status: "arrived",
                     arrivedAt: now,
                     activeAt: now,
                     checkInTime: now,
                     updatedAt: now,
-                    arrivalDiffMinutes: diffMinutes,
-                    arrivalNote: arrivalMessage
+                    arrivalDiffMinutes: isNaN(diffMinutes) ? 0 : diffMinutes,
+                    arrivalNote: arrivalMessage,
+                    cancelReason: null // clear if it was auto-expired
                 });
 
                 if (reservation.tableId) {
@@ -196,18 +207,27 @@ const ScanCheckIn = () => {
                     title: isWarning ? "⚠️ Schedule Alert" : "Checked In ✓",
                     description: `${reservation.name}: ${arrivalMessage}`
                 });
+            } else if (reservation.status === "cancelled") {
+                toast({
+                    variant: "destructive",
+                    title: "Reservation Cancelled",
+                    description: `This reservation was manually cancelled.`
+                });
+                reservation.arrivalNote = "CANCELLED";
             } else if (reservation.status === "arrived" || reservation.status === "active") {
                 toast({ title: "Already Arrived", description: `${reservation.name} has already been scanned.` });
+                reservation.arrivalNote = arrivalMessage || "Already Checked In";
             } else {
                 toast({ title: "Reservation Found", description: `Status: ${reservation.status}` });
+                reservation.arrivalNote = "Status: " + reservation.status;
             }
 
             setScannedResult(reservation);
             setIsScannerActive(false);
             stopScanner();
-        } catch (err) {
+        } catch (err: any) {
             console.error("[Scanner] Error:", err);
-            toast({ variant: "destructive", title: "Scan Error", description: "Failed to process QR code." });
+            toast({ variant: "destructive", title: "Scan Error", description: err.message || JSON.stringify(err) || "Failed to process QR code." });
             lastScannedToken.current = null;
         } finally {
             setIsProcessing(false);
