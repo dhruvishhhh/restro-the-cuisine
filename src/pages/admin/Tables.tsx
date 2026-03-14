@@ -699,7 +699,7 @@ const Tables = () => {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-card p-6 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-6">
                             <div className="hidden md:flex flex-col">
-                                <h2 className="text-2xl font-serif font-black text-foreground">Sanctuary Seating Plan</h2>
+                                <h2 className="text-2xl font-serif font-black text-foreground">Restaurant Seating Plan</h2>
                                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">Operational Layout Management</p>
                             </div>
                             <div className="h-10 w-px bg-border hidden md:block" />
@@ -954,7 +954,7 @@ const Tables = () => {
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
                                         <Layers className="w-5 h-5 text-accent" />
-                                        The House of Earthmonk Seating Plan
+                                        Restro Global Cuisine Seating Plan
                                     </CardTitle>
                                     <CardDescription>Arrange and align your units with precision.</CardDescription>
                                 </div>
@@ -1153,7 +1153,7 @@ const Tables = () => {
                                                 <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center opacity-40">
                                                     <Grid className="w-8 h-8" />
                                                 </div>
-                                                <p className="italic text-sm">No tables assigned to this sanctuary area.</p>
+                                                <p className="italic text-sm">No tables assigned to this specific area.</p>
                                             </div>
                                         )}
                                     </div>

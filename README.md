@@ -1,10 +1,10 @@
-# The House of Earthmonk
+# Restro Global Cuisine Bar & Bistro
 
 A premium, bespoke reservation and management platform built for modern dining experiences.
 
 ## 🚀 Overview
 
-The House of Earthmonk is a sophisticated web application designed to streamline the guest journey, from real-time table booking to administrative oversight. Rooted in mindful design and technical precision, this platform offers a seamless experience for both guests and management.
+Restro Global Cuisine Bar & Bistro is a sophisticated web application designed to streamline the guest journey, from real-time table booking to administrative oversight. Rooted in modern design and technical precision, this platform offers a seamless experience for both guests and management.
 
 ## 🛠️ Technology Stack
 
@@ -37,4 +37,4 @@ The House of Earthmonk is a sophisticated web application designed to streamline
 Designed with a focus on operational efficiency and guest satisfaction. This platform is fully customizable to meet evolving business needs.
 
 ---
-© 2024 The House of Earthmonk. All rights reserved.
+© 2024 Restro Global Cuisine Bar & Bistro. All rights reserved.

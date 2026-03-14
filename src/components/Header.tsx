@@ -76,10 +76,10 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
               <EarthMonkLogo className="w-8 h-8 md:w-11 md:h-11" />
               <div className="flex flex-col">
                 <span className="font-serif text-[11px] md:text-lg font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
-                  THE HOUSE OF
+                  RESTRO
                 </span>
-                <span className="text-[8px] md:text-[11px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
-                  EARTHMONK
+                <span className="text-[7px] md:text-[9px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
+                  GLOBAL CUISINE
                 </span>
               </div>
             </a>

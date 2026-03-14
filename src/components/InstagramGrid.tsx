@@ -21,7 +21,7 @@ const InstagramGrid = () => {
         transition={{ duration: 0.8 }}
         className="text-center mb-12 px-6"
       >
-        <span className="section-subheading">@houseofearth.monk</span>
+        <span className="section-subheading">@restro.the.cuisine</span>
         <h2 className="section-heading text-foreground mt-4">
           Follow the Journey
         </h2>

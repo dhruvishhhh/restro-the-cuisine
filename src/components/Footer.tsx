@@ -36,10 +36,10 @@ const Footer = () => {
         <div className="flex justify-between items-center pb-4 border-b border-gold/10">
           <div className="flex flex-col">
             <h3 className="text-sm md:text-lg tracking-wider uppercase font-serif font-medium text-gold/90 leading-tight">
-              The House of
+              RESTRO
             </h3>
-            <span className="text-[10px] md:text-xs tracking-[0.3em] font-bold text-gold/60 uppercase mt-0.5">
-              EARTHMONK
+            <span className="text-[8px] md:text-[10px] tracking-[0.2em] font-bold text-gold/60 uppercase mt-0.5">
+              GLOBAL CUISINE
             </span>
           </div>
 
@@ -99,16 +99,15 @@ const Footer = () => {
         {/* Bottom Branding: Anchored to Very Bottom */}
         <div className="pt-4 border-t border-gold/10 text-center flex flex-col items-center gap-2">
           <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold/50">
-              Crafted with Soul
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/50">
+              A Premium Multicuisine Dining Experience
             </p>
             <p className="text-[9px] text-gold/20 tracking-widest uppercase">
-              © 2024 The House of Earthmonk
+              © 2024 Restro Global Cuisine Bar & Bistro
             </p>
           </div>
 
           <div className="flex gap-4 opacity-30 mt-1 mb-2">
-            <span className="text-[8px] tracking-[0.3em] uppercase">VADODARA</span>
             <span className="text-[8px] tracking-[0.3em] uppercase">ANAND</span>
           </div>
         </div>

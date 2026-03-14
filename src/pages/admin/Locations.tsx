@@ -70,9 +70,9 @@ const AdminLocations = () => {
     const handleVerifyPassword = () => {
         if (passwordInput === "Monk@2026") {
             setIsVerified(true);
-            toast({ title: "Sanctuary Access Granted", description: "You now have administrative control over locations." });
+            toast({ title: "Access Granted", description: "You now have administrative control over locations." });
         } else {
-            toast({ variant: "destructive", title: "Access Denied", description: "Incorrect sanctuary password." });
+            toast({ variant: "destructive", title: "Access Denied", description: "Incorrect admin password." });
         }
     };
 
@@ -100,7 +100,7 @@ const AdminLocations = () => {
                                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
                                     <MapPin className="w-8 h-8 text-primary" />
                                 </div>
-                                <CardTitle className="text-2xl font-serif">Sanctuary Control</CardTitle>
+                                <CardTitle className="text-2xl font-serif">Location Control</CardTitle>
                                 <CardDescription>Enter the administrator password to manage locations.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -143,17 +143,17 @@ const AdminLocations = () => {
                         <Card className="border-border bg-card">
                             <CardHeader>
                                 <CardTitle>Add New Location</CardTitle>
-                                <CardDescription>Enter details for a new sanctuary.</CardDescription>
+                                <CardDescription>Enter details for a new location.</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="space-y-4">
                                 <form onSubmit={handleAddLocation} className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Sanctuary Name</Label>
+                                        <Label htmlFor="name">Location Name</Label>
                                         <Input
                                             id="name"
-                                            placeholder="Earth Monk - Anand"
-                                            value={newLocation.name}
+                                            value={newLocation.name || ''}
                                             onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
+                                            placeholder="Restro - Anand"
                                             required
                                         />
                                     </div>
@@ -198,7 +198,7 @@ const AdminLocations = () => {
                         {/* Location List */}
                         <Card className="lg:col-span-2 border-border bg-card">
                             <CardHeader>
-                                <CardTitle>Active Sanctuaries</CardTitle>
+                                <CardTitle>Active Locations</CardTitle>
                                 <CardDescription>Your current operational locations.</CardDescription>
                             </CardHeader>
                             <CardContent>

@@ -123,7 +123,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
       setSubmitted(true);
       toast({
         title: "Reservation Requested",
-        description: "Your sanctuary request is being reviewed. Check status on our tracking page.",
+        description: "Your reservation request is being reviewed. Check status on our tracking page.",
       });
 
       setTimeout(() => navigate("/"), 6000);
@@ -158,7 +158,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
         </div>
         <h3 className="section-heading text-xl md:text-2xl mb-3 md:mb-4 text-primary-foreground">Request Sent Successfully</h3>
         <p className="text-primary-foreground/80 font-sans leading-relaxed mb-4 text-sm">
-          The House of Earthmonk request has been submitted. <span className="text-gold font-bold">You will receive a confirmation or status update email shortly</span> once our monks review the schedule.
+          Restro Global Cuisine request has been submitted. <span className="text-gold font-bold">You will receive a confirmation or status update email shortly</span> once our team reviews the schedule.
         </p>
         <p className="text-gold/60 text-[10px] uppercase tracking-widest mt-6 md:mt-8">
           Redirecting to home in a moment...

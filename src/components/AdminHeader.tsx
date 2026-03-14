@@ -103,10 +103,10 @@ const AdminHeader = () => {
 
             <div className="flex flex-col">
                 <h1 className="text-xl font-bold font-serif text-foreground">
-                    The House of <span className="text-accent underline decoration-accent/30 underline-offset-4">Earthmonk</span>
+                    Restro <span className="text-accent underline decoration-accent/30 underline-offset-4">Global Cuisine</span>
                 </h1>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">
-                    Central Management System • Vadodara & Anand
+                    Central Management System • Anand
                 </p>
             </div>
 
@@ -217,7 +217,7 @@ const AdminHeader = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-foreground">Welcome to Admin</p>
-                                            <p className="text-[10px] text-muted-foreground mt-0.5">The new sanctuary control panel is ready for use.</p>
+                                            <p className="text-[10px] text-muted-foreground mt-0.5">The new control panel is ready for use.</p>
                                             <p className="text-[10px] text-accent font-bold mt-2 uppercase tracking-wide">5 Minutes Ago</p>
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@ const AdminHeader = () => {
                                 className="w-full justify-start gap-3 h-10 text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-xs font-bold transition-all"
                                 onClick={handleLogout}
                             >
-                                <LogOut className="w-4 h-4" /> Sign Out from Sanctuary
+                                <LogOut className="w-4 h-4" /> Sign Out
                             </Button>
                         </PopoverContent>
                     </Popover>

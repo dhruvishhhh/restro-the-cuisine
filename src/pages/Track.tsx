@@ -16,7 +16,7 @@ const Track = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-center mb-16"
                     >
-                        <span className="section-subheading">The House of Earthmonk Access</span>
+                        <span className="section-subheading">Restro Global Cuisine Access</span>
                         <h1 className="section-heading text-4xl md:text-5xl mt-4">Track Your Request</h1>
                         <p className="text-muted-foreground font-sans mt-4 max-w-lg mx-auto">
                             Enter the phone number used during your reservation to view its real-time status and details.

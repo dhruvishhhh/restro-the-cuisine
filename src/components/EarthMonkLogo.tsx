@@ -43,17 +43,17 @@ const EarthMonkLogo = ({ className = "w-full h-full" }: { className?: string }) 
                     fill="#D4AF37"
                     style={{ filter: 'drop-shadow(0 0 5px rgba(212,175,55,0.3))' }}
                 >
-                    The House Of
+                    Restro
                 </text>
                 <text
                     x="200"
                     y="290"
                     textAnchor="middle"
-                    className="font-serif text-[24px] font-bold uppercase tracking-[0.4em]"
+                    className="font-serif text-[18px] font-bold uppercase tracking-[0.2em]"
                     fill="#D4AF37"
                     style={{ filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.5))' }}
                 >
-                    Earth Monk
+                    GLOBAL CUISINE
                 </text>
             </svg>
         </div>

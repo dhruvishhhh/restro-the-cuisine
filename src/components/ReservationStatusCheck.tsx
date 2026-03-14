@@ -47,9 +47,9 @@ const ReservationStatusCheck = () => {
 
     const getStatusMessage = (status: string) => {
         switch (status) {
-            case 'approved': return "Your sanctuary is ready. We look forward to your arrival.";
-            case 'rejected': case 'cancelled': return "The sanctuary is currently full for this slot. Please try another time.";
-            default: return "Your request is being reviewed by our monks. Please check back shortly.";
+            case 'approved': return "Your table is ready. We look forward to your arrival.";
+            case 'rejected': case 'cancelled': return "We are currently full for this slot. Please try another time.";
+            default: return "Your request is being reviewed by our team. Please check back shortly.";
         }
     };
 
@@ -133,7 +133,7 @@ const ReservationStatusCheck = () => {
                                     href="/contact"
                                     className="inline-flex px-8 py-3 bg-gold text-primary text-[10px] uppercase tracking-widest font-bold hover:bg-gold/90 transition-all rounded-sm"
                                 >
-                                    Contact Sanctuary
+                                    Contact Restaurant
                                 </a>
                             </div>
                         )}

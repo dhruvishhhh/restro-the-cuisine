@@ -48,7 +48,7 @@ export const sendApprovalEmail = async (data: ApprovalEmailData): Promise<boolea
     check_in_token: data.check_in_token,
     location_map_url: mapUrl,
     html_content: data.html_content || "",
-    subject: "Your Reservation at The House of Earthmonk is Approved!",
+    subject: "Your Reservation at Restro Global Cuisine is Approved!",
   };
 
   try {
@@ -97,7 +97,7 @@ export const generateApprovalEmailHTML = (data: ApprovalEmailData): string => {
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#2a2a2a;border:1px solid #3a3a3a;border-radius:12px;overflow:hidden;">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d3a2e,#1a1a1a);padding:40px 40px 30px;text-align:center;">
-          <p style="color:#c4a86b;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;">The House of Earthmonk</p>
+          <p style="color:#c4a86b;font-size:10px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;">Restro Global Cuisine</p>
           <h1 style="color:#f5f0eb;font-size:24px;margin:0;font-weight:normal;">Your Reservation is Confirmed</h1>
         </td></tr>
         <!-- Body -->
@@ -142,7 +142,7 @@ export const generateApprovalEmailHTML = (data: ApprovalEmailData): string => {
         </td></tr>
         <!-- Footer -->
         <tr><td style="padding:24px 40px;border-top:1px solid #3a3a3a;text-align:center;">
-          <p style="color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:0;">The House of Earthmonk</p>
+          <p style="color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:0;">Restro Global Cuisine</p>
         </td></tr>
       </table>
     </td></tr>
@@ -177,11 +177,11 @@ export const generateReminderEmailHTML = (data: ApprovalEmailData): string => {
             <a href="${mapUrl}" style="display:inline-block;padding:12px 24px;background-color:#c4a86b;color:#1a1a1a;text-decoration:none;border-radius:4px;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">View Location Map</a>
           </div>
 
-          <p style="color:#a0998f;font-size:14px;line-height:1.7;margin:0;">Safe travels to our sanctuary. Your seat at ${data.table_marking} is waiting.</p>
+          <p style="color:#a0998f;font-size:14px;line-height:1.7;margin:0;">Safe travels. Your seat at ${data.table_marking} is waiting.</p>
         </td></tr>
         <!-- Footer -->
         <tr><td style="padding:24px 40px;border-top:1px solid #3a3a3a;text-align:center;">
-          <p style="color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:0;">The House of Earthmonk</p>
+          <p style="color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:0;">Restro Global Cuisine</p>
         </td></tr>
       </table>
     </td></tr>

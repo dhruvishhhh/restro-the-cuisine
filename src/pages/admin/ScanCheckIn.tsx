@@ -554,7 +554,7 @@ const ScanCheckIn = () => {
                                                 <MapIcon className="w-64 h-64 text-primary" />
                                             </div>
                                             <p className="text-[11px] text-primary font-black uppercase tracking-[0.4em]">
-                                                Designated Sanctuary
+                                                Designated Location
                                             </p>
                                             <p className="text-8xl font-black text-primary tracking-tighter uppercase leading-none drop-shadow-sm">
                                                 {scannedResult.tableMarking || "TBA"}
@@ -593,7 +593,7 @@ const ScanCheckIn = () => {
                                     </div>
                                     <div className="w-40 h-1 rounded-full bg-gradient-to-r from-transparent via-border to-transparent" />
                                     <p className="text-[10px] font-black text-primary/40 uppercase tracking-[0.5em] mt-4">
-                                        The House of Earthmonk
+                                        Restro Global Cuisine
                                     </p>
                                 </div>
                             )}

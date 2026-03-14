@@ -22,9 +22,9 @@ const Privacy = () => {
 
                     <div className="prose prose-gold prose-invert max-w-none space-y-12 text-primary/80 font-sans leading-relaxed">
                         <section>
-                            <h2 className="text-2xl font-serif text-foreground mb-4">1. Sanctuary of Data</h2>
+                            <h2 className="text-2xl font-serif text-foreground mb-4">1. Protection of Data</h2>
                             <p>
-                                At The House of Earthmonk, we treat your personal information with the same reverence we give our sanctuary grounds.
+                                At Restro Global Cuisine, we treat your personal information with the utmost respect.
                                 We only collect what is necessary to facilitate your journey with us—specifically your name, phone number, and dining preferences.
                             </p>
                         </section>
@@ -33,7 +33,7 @@ const Privacy = () => {
                             <h2 className="text-2xl font-serif text-foreground mb-4">2. Mindfulness in Collection</h2>
                             <p>
                                 We collect information through our reservation system and contact forms. This data is used solely to manage your table bookings
-                                and ensure we can reach you regarding any changes to your sanctuary experience.
+                                and ensure we can reach you regarding any changes to your dining experience.
                             </p>
                         </section>
 
@@ -46,9 +46,9 @@ const Privacy = () => {
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-serif text-foreground mb-4">4. Your Right to Silence</h2>
+                            <h2 className="text-2xl font-serif text-foreground mb-4">4. Your Right to Privacy</h2>
                             <p>
-                                You may request the removal of your data from our sanctuary records at any time. Simply reach out to our monks via
+                                You may request the removal of your data from our records at any time. Simply reach out to us via
                                 the contact page, and we will honor your request for privacy.
                             </p>
                         </section>

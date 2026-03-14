@@ -202,7 +202,7 @@ const Dashboard = () => {
             toast({
                 variant: "destructive",
                 title: "Access Denied",
-                description: "Incorrect sanctuary administrator password."
+                description: "Incorrect administrator password."
             });
         }
     };
@@ -346,8 +346,8 @@ const Dashboard = () => {
 
                             <Card className="border-border bg-card shadow-sm hover:shadow-md transition-shadow">
                                 <CardHeader>
-                                    <CardTitle className="text-lg">The House of Earthmonk Control</CardTitle>
-                                    <CardDescription>Advanced location and The House of Earthmonk management.</CardDescription>
+                                    <CardTitle className="text-lg">Restro Global Cuisine Control</CardTitle>
+                                    <CardDescription>Advanced location and restaurant management.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <Dialog open={isPassDialogOpen} onOpenChange={setIsPassDialogOpen}>
@@ -362,7 +362,7 @@ const Dashboard = () => {
                                             </DialogHeader>
                                             <div className="space-y-4 py-4">
                                                 <div className="space-y-2">
-                                                    <Label>Sanctuary Admin Password</Label>
+                                                    <Label>Admin Password</Label>
                                                     <Input
                                                         type="password"
                                                         placeholder="••••••••"

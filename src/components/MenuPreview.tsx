@@ -7,24 +7,24 @@ import menu3 from "@/assets/menu-3.jpg";
 const menuItems = [
   {
     image: menu1,
-    title: "Earth Bowl",
-    description: "Seasonal vegetables, heritage grains, cashew cream",
-    price: "₹480",
-    alt: "Elegant plated dish with seasonal vegetables",
+    title: "Paneer Tikka Masala",
+    description: "Cottage cheese cubes cooked in a rich, spiced tomato and butter gravy",
+    price: "₹380",
+    alt: "Rich paneer tikka masala dish",
   },
   {
     image: menu2,
-    title: "Ceremonial Matcha",
-    description: "Stone-ground Uji matcha, oat milk, wild honey",
-    price: "₹320",
-    alt: "Matcha latte in handmade ceramic bowl",
+    title: "Classic Margherita Pizza",
+    description: "Wood-fired crust with San Marzano tomatoes, fresh mozzarella, and basil",
+    price: "₹450",
+    alt: "Wood-fired Margherita pizza",
   },
   {
     image: menu3,
-    title: "Sourdough & Honey",
-    description: "48-hour fermented sourdough, raw forest honey",
-    price: "₹280",
-    alt: "Artisan sourdough bread with honey",
+    title: "Vegetable Hakka Noodles",
+    description: "Wok-tossed noodles with fresh assorted vegetables and soy sauce",
+    price: "₹320",
+    alt: "Wok-tossed hakka noodles",
   },
 ];
 

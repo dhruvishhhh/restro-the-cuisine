@@ -15,9 +15,9 @@ const MenuPage = () => {
             >
                 <div className="max-w-7xl mx-auto px-6 py-12">
                     <BackButton />
-                    <h1 className="section-heading text-center mb-4">Our Sacred Menu</h1>
+                    <h1 className="section-heading text-center mb-4">Our Menu</h1>
                     <p className="text-center text-muted-foreground font-sans tracking-widest uppercase text-xs mb-12">
-                        A journey through earth-borne flavors
+                        A journey through multicuisine flavors
                     </p>
                     <MenuPreview />
                 </div>

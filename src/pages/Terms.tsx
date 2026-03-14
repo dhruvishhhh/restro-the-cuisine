@@ -22,9 +22,9 @@ const Terms = () => {
 
                     <div className="prose prose-gold prose-invert max-w-none space-y-12 text-primary/80 font-sans leading-relaxed">
                         <section>
-                            <h2 className="text-2xl font-serif text-foreground mb-4">1. Respect for the Sanctuary</h2>
+                            <h2 className="text-2xl font-serif text-foreground mb-4">1. Respect for the Restaurant</h2>
                             <p>
-                                By accessing the The House of Earthmonk website, you agree to treat this digital space with respect.
+                                By accessing the Restro Global Cuisine website, you agree to treat this digital space with respect.
                                 Our content is a reflection of our soul; please do not reproduce or use our imagery without permission.
                             </p>
                         </section>
@@ -33,7 +33,7 @@ const Terms = () => {
                             <h2 className="text-2xl font-serif text-foreground mb-4">2. Reservation Etiquette</h2>
                             <p>
                                 A reservation request is a gesture of intent. While we strive to honor every request, a booking is only confirmed
-                                once you receive an approval notification. We reserve the right to modify or cancel reservations to maintain sanctuary balance.
+                                once you receive an approval notification. We reserve the right to modify or cancel reservations to maintain restaurant balance.
                             </p>
                         </section>
 
@@ -48,7 +48,7 @@ const Terms = () => {
                         <section>
                             <h2 className="text-2xl font-serif text-foreground mb-4">4. Limitation of Liability</h2>
                             <p>
-                                While we provide a nourishing experience, The House of Earthmonk is not liable for disruptions beyond our control.
+                                While we provide a nourishing experience, Restro Global Cuisine is not liable for disruptions beyond our control.
                                 We provide our services "as is" and encourage you to embrace the flow of the experience.
                             </p>
                         </section>

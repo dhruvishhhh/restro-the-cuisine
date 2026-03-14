@@ -8,7 +8,7 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
       <div className="absolute inset-0 animate-slow-zoom">
         <img
           src={heroBg}
-          alt="House of Earth Monk interior with bamboo ceiling and golden pendant lights"
+          alt="Restro Global Cuisine Bar & Bistro interior"
           className="w-full h-full object-cover"
         />
       </div>
@@ -28,9 +28,9 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
             Est. 2024
           </h2>
           <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl font-medium text-primary-foreground gold-glow tracking-tight leading-[1.1]">
-            The House of
+            Restro
             <br />
-            Earthmonk
+            Global Cuisine
           </h1>
         </motion.div>
 
@@ -38,9 +38,9 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="font-serif italic text-base md:text-xl text-primary-foreground/70 mb-8 md:mb-12 max-w-md"
+          className="font-serif italic text-sm md:text-lg text-primary-foreground/70 mb-8 md:mb-12 max-w-md"
         >
-          Rooted in Earth. Crafted with Soul.
+          A premium multicuisine dining experience.
         </motion.p>
 
         <motion.a

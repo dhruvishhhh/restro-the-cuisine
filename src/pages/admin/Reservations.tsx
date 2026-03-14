@@ -778,9 +778,9 @@ const Reservations = () => {
                             <div className="space-y-6 pt-4">
                                 <div className="p-4 bg-background border border-border rounded-lg space-y-4 text-sm font-serif">
                                     <div className="space-y-2">
-                                        <p className="font-bold">Subject: Your Reservation at The House of Earthmonk is Approved!</p>
+                                        <p className="font-bold">Subject: Your Reservation at Restro Global Cuisine is Approved!</p>
                                         <p>Dear {selectedResForEmail?.name},</p>
-                                        <p>We are delighted to confirm your reservation at our <strong>{selectedResForEmail?.location}</strong> sanctuary.</p>
+                                        <p>We are delighted to confirm your reservation at our <strong>{selectedResForEmail?.location}</strong>.</p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 text-xs bg-muted/30 p-3 rounded border border-border">
                                         <p><strong>Date:</strong> {selectedResForEmail?.date}</p>
@@ -799,9 +799,9 @@ const Reservations = () => {
                                         <p className="text-[10px] text-muted-foreground italic px-6 text-center font-sans">Present this QR code at the entrance for seamless check-in.</p>
                                     </div>
                                     <p>We look forward to hosting you soon!</p>
-                                    <p className="text-xs text-muted-foreground">Warmly,<br />The House of Earth Monk</p>
+                                    <p className="text-xs text-muted-foreground">Warmly,<br />Restro Global Cuisine</p>
                                 </div>
-                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`The House of Earthmonk Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${formatToAmPm(selectedResForEmail.time)}.\nPlease use the provided QR pass for entry.`)}>
+                                <Button className="w-full gap-2" onClick={() => copyToClipboard(`Restro Global Cuisine Confirmation\n\nDear ${selectedResForEmail.name},\nYour reservation is approved for ${selectedResForEmail.date} at ${formatToAmPm(selectedResForEmail.time)}.\nPlease use the provided QR pass for entry.`)}>
                                     <Copy className="w-4 h-4" /> Copy Email Text
                                 </Button>
                             </div>

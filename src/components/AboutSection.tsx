@@ -45,8 +45,8 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             </h2>
             <div className="w-12 h-px bg-gold" />
             <p className="text-muted-foreground leading-relaxed text-base md:text-lg font-sans">
-              Born from a deep reverence for the earth and the art of mindful
-              dining, The House of Earthmonk is a space where every detail —
+              Born from a deep appreciation for global culinary traditions,
+              dining, Restro Global Cuisine Bar & Bistro is a space where every detail —
               from the bamboo ceilings to the hand-thrown ceramics — tells a
               story of conscious creation.
             </p>

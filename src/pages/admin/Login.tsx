@@ -39,7 +39,7 @@ const Login = () => {
 
             toast({
                 title: "Welcome back!",
-                description: "Successfully logged in to The House of Earthmonk Admin Panel.",
+                description: "Successfully logged in to the Restro Global Cuisine Admin Panel.",
             });
             navigate("/admin");
         } catch (error: any) {
@@ -71,7 +71,7 @@ const Login = () => {
                     </div>
                     <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
                     <CardDescription className="text-center text-muted-foreground">
-                        Enter your credentials to access the sanctuary controls
+                        Enter your credentials to access the control panel
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
@@ -83,7 +83,7 @@ const Login = () => {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="admin@earthmonksanctuary.com"
+                                    placeholder="admin@restro.the.cuisine"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="pl-10 bg-background border-border focus:border-accent transition-colors"

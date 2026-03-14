@@ -4,19 +4,12 @@ import { MapPin } from "lucide-react";
 
 const locations = [
   {
-    name: "Anand",
-    city: "Gujarat",
-    address: "The House of Earthmonk, Vidhyanagar",
+    name: "Restro Global Cuisine",
+    city: "Anand, Gujarat",
+    address: "Lambhvel Road, Opp. Hero Showroom, Near Hanuman Temple, Vallabh Vidyanagar",
     hours: "11:00 AM – 11:00 PM",
     mapLink: "https://maps.app.goo.gl/x8ZDg1hwzR7gSJUv6"
-  },
-  {
-    name: "Vadodara",
-    city: "Gujarat",
-    address: "The House of Earthmonk, Vadodara",
-    hours: "11:00 AM – 11:00 PM",
-    mapLink: "https://maps.app.goo.gl/pzJaAyTHi8DjG1nM7"
-  },
+  }
 ];
 
 const LocationsSection = () => {
@@ -33,10 +26,10 @@ const LocationsSection = () => {
           className="text-center mb-10 md:mb-16"
         >
           <span className="section-subheading">Visit Us</span>
-          <h2 className="section-heading text-foreground mt-4">Our Sanctuary</h2>
+          <h2 className="section-heading text-foreground mt-4">Our Locations</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
+        <div className="grid grid-cols-1 gap-6 max-w-lg mx-auto px-4">
           {locations.map((loc, i) => (
             <motion.div
               key={loc.name}
