@@ -15,6 +15,7 @@ import {
     Map as MapIcon,
     QrCode,
     CheckCircle,
+    XCircle,
     Loader2,
     RefreshCw,
     Camera,
@@ -152,9 +153,13 @@ const ScanCheckIn = () => {
 
             let arrivalMessage = "";
             let isWarning = false;
+            let isExpired = false;
 
             if (isNaN(diffMinutes)) {
                 arrivalMessage = "Time invalid / unscheduled arrival.";
+            } else if (diffMinutes > 60) {
+                isExpired = true;
+                arrivalMessage = `EXPIRED: ${diffMinutes} mins past schedule (>1 hour late).`;
             } else if (Math.abs(diffMinutes) <= 30) {
                 if (diffMinutes < 0) {
                     arrivalMessage = `${Math.abs(diffMinutes)} minutes early.`;
@@ -173,7 +178,21 @@ const ScanCheckIn = () => {
             }
 
             // Auto-arrival update / Resurrect late reservations
-            if (["approved", "pending"].includes(reservation.status) || 
+            if (isExpired) {
+                toast({
+                    variant: "destructive",
+                    title: "Reservation Expired",
+                    description: `Cannot check in. Guest is ${diffMinutes} minutes late (Max 60 mins allowed).`
+                });
+                reservation.status = "expired";
+                reservation.arrivalNote = arrivalMessage;
+                await updateDoc(doc(db, "reservations", reservation.id), {
+                    status: "cancelled",
+                    cancelReason: "auto_expired",
+                    updatedAt: now,
+                    arrivalNote: arrivalMessage
+                });
+            } else if (["approved", "pending"].includes(reservation.status) || 
                 (reservation.status === "cancelled" && reservation.cancelReason === "auto_expired")) {
                 
                 await updateDoc(doc(db, "reservations", reservation.id), {
@@ -318,6 +337,8 @@ const ScanCheckIn = () => {
             case "arrived": return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
             case "active": return "bg-sky-500/10 text-sky-600 border-sky-500/20";
             case "approved": return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+            case "expired": return "bg-destructive/10 text-destructive border-destructive/20";
+            case "cancelled": return "bg-destructive/10 text-destructive border-destructive/20";
             default: return "bg-muted text-muted-foreground border-border";
         }
     };
@@ -457,7 +478,11 @@ const ScanCheckIn = () => {
                             {scannedResult ? (
                                 <Card className="h-full border-2 border-primary/20 bg-card rounded-[2.5rem] shadow-2xl relative overflow-hidden flex flex-col">
                                     <div className="absolute top-0 right-0 p-10 opacity-5">
-                                        <CheckCircle className="w-48 h-48 text-primary" />
+                                        {scannedResult.status === "expired" || scannedResult.status === "cancelled" ? (
+                                            <XCircle className="w-48 h-48 text-destructive opacity-50" />
+                                        ) : (
+                                            <CheckCircle className="w-48 h-48 text-primary" />
+                                        )}
                                     </div>
 
                                     <CardHeader className="p-10 pb-0">
@@ -471,10 +496,12 @@ const ScanCheckIn = () => {
                                                 </p>
                                             </div>
                                             <div className="space-y-1">
-                                                <h2 className="text-5xl font-black tracking-tighter uppercase italic text-foreground leading-none">
+                                                <h2 className={`text-5xl font-black tracking-tighter uppercase italic leading-none ${scannedResult.status === "expired" || scannedResult.status === "cancelled" ? "text-destructive" : "text-foreground"}`}>
                                                     {scannedResult.name}
                                                 </h2>
-                                                <p className="text-muted-foreground font-black uppercase tracking-[0.3em] text-[10px]">Guest Verified ✓</p>
+                                                <p className={`font-black uppercase tracking-[0.3em] text-[10px] ${scannedResult.status === "expired" || scannedResult.status === "cancelled" ? "text-destructive" : "text-muted-foreground"}`}>
+                                                    {scannedResult.status === "expired" || scannedResult.status === "cancelled" ? "Guest Checked-in Failed ✗" : "Guest Verified ✓"}
+                                                </p>
                                             </div>
                                         </div>
                                     </CardHeader>
