@@ -71,9 +71,16 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
-            <div className="flex flex-col">
-            {/* Branding removed */}
-          </div>
+            <a href="/" className="flex items-center gap-2 group">
+              <div className="flex flex-col">
+                <span className="font-serif text-[11px] md:text-lg font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
+                  RESTRO
+                </span>
+                <span className="text-[7px] md:text-[9px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
+                  GLOBAL CUISINE
+                </span>
+              </div>
+            </a>
           </div>
 
           {/* Nav Links (Desktop Center-ish) */}
