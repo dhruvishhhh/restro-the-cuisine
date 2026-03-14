@@ -216,37 +216,47 @@ const ScanCheckIn = () => {
     }, [toast, stopScanner]);
 
     // Start scanner helper
-    const startScanner = useCallback(async () => {
-        if (!videoRef.current) return;
-        stopScanner();
-        setError(null);
+    const startScanner = useCallback(() => {
+        setIsScannerActive(true);
+        
+        setTimeout(async () => {
+            if (!videoRef.current) {
+                setIsScannerActive(false);
+                return;
+            }
+            
+            stopScanner();
+            setError(null);
 
-        try {
-            const scanner = new QrScanner(
-                videoRef.current,
-                (result) => {
-                    const token = result.data.trim();
-                    if (token && token !== lastScannedToken.current && !processingToken.current) {
-                        handleVerifyAndCheckIn(token);
+            try {
+                const scanner = new QrScanner(
+                    videoRef.current,
+                    (result) => {
+                        // Handle both old version string results and new object results
+                        const data = typeof result === 'string' ? result : result?.data;
+                        const token = data ? data.trim() : '';
+                        if (token && token !== lastScannedToken.current && !processingToken.current) {
+                            handleVerifyAndCheckIn(token);
+                        }
+                    },
+                    {
+                        returnDetailedScanResult: true,
+                        preferredCamera: "environment",
+                        highlightScanRegion: true,
+                        highlightCodeOutline: true,
+                        maxScansPerSecond: 25,
                     }
-                },
-                {
-                    preferredCamera: "environment",
-                    highlightScanRegion: true,
-                    highlightCodeOutline: true,
-                    maxScansPerSecond: 25,
-                }
-            );
+                );
 
-            qrScannerRef.current = scanner;
-            await scanner.start();
-            setScannerReady(true);
-            setIsScannerActive(true);
-        } catch (e: any) {
-            console.error("[Scanner] Start failed:", e);
-            setError(e.message || "Failed to access camera.");
-            setIsScannerActive(false);
-        }
+                qrScannerRef.current = scanner;
+                await scanner.start();
+                setScannerReady(true);
+            } catch (e: any) {
+                console.error("[Scanner] Start failed:", e);
+                setError(e.message || "Failed to access camera.");
+                setIsScannerActive(false);
+            }
+        }, 100); // Give DOM a moment to mount the video element before starting
     }, [handleVerifyAndCheckIn, stopScanner]);
 
     // Cleanup on unmount
