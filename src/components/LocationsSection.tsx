@@ -4,7 +4,7 @@ import { MapPin } from "lucide-react";
 
 const locations = [
   {
-    name: "Restro Global Cuisine",
+    name: "Our Location",
     city: "Anand, Gujarat",
     address: "Lambhvel Road, Opp. Hero Showroom, Near Hanuman Temple, Vallabh Vidyanagar",
     hours: "11:00 AM – 11:00 PM",

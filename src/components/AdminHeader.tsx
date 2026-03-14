@@ -103,7 +103,7 @@ const AdminHeader = () => {
 
             <div className="flex flex-col">
                 <h1 className="text-xl font-bold font-serif text-foreground">
-                    Restro <span className="text-accent underline decoration-accent/30 underline-offset-4">Global Cuisine</span>
+                    Restaurant <span className="text-accent underline decoration-accent/30 underline-offset-4">Control Panel</span>
                 </h1>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">
                     Central Management System • Anand

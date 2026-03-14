@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import EarthMonkLogo from "./EarthMonkLogo";
+
 import { useLocation } from "react-router-dom";
 
 const navLinks = [
@@ -71,18 +71,9 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-2 group">
-              <EarthMonkLogo className="w-8 h-8 md:w-11 md:h-11" />
-              <div className="flex flex-col">
-                <span className="font-serif text-[11px] md:text-lg font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
-                  RESTRO
-                </span>
-                <span className="text-[7px] md:text-[9px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
-                  GLOBAL CUISINE
-                </span>
-              </div>
-            </a>
+            <div className="flex flex-col">
+            {/* Branding removed */}
+          </div>
           </div>
 
           {/* Nav Links (Desktop Center-ish) */}
