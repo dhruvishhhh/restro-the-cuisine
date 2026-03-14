@@ -128,7 +128,7 @@ const Reservations = () => {
                         const normalizedTime = normalizeTimeTo24h(res.time);
                         const [h, m] = normalizedTime.split(":").map(Number);
                         const slotTotalMin = h * 60 + m;
-                        if (currentTotalMin > (slotTotalMin + 30)) {
+                        if (currentTotalMin > (slotTotalMin + 60)) {
                             await updateDoc(doc(db, "reservations", res.id), {
                                 status: "cancelled",
                                 cancelReason: "auto_expired",
@@ -371,10 +371,15 @@ const Reservations = () => {
         return matchesSearch && matchesStatus && matchesLocation && matchesDate;
     });
 
-    // Group by Time Slot
-    const timeSlots = Array.from(new Set(filteredReservations.map(r => r.time))).sort((a, b) => {
-        const nA = normalizeTimeTo24h(a);
-        const nB = normalizeTimeTo24h(b);
+    // Group by Date and Time Slot
+    const groupedSlots = Array.from(new Set(filteredReservations.map(r => `${r.date}|${r.time}`))).sort((a, b) => {
+        const [dateA, timeA] = a.split('|');
+        const [dateB, timeB] = b.split('|');
+        
+        if (dateA !== dateB) return dateA.localeCompare(dateB);
+
+        const nA = normalizeTimeTo24h(timeA);
+        const nB = normalizeTimeTo24h(timeB);
         const [hA, mA] = nA.split(':').map(Number);
         const [hB, mB] = nB.split(':').map(Number);
         return (hA * 60 + mA) - (hB * 60 + mB);
@@ -573,25 +578,30 @@ const Reservations = () => {
                         </CardHeader>
                         <CardContent className="px-2 md:px-6">
                             <div className="space-y-12">
-                                {timeSlots.length === 0 ? (
+                                {groupedSlots.length === 0 ? (
                                     <p className="text-center py-12 text-muted-foreground italic">No reservations found.</p>
                                 ) : (
-                                    timeSlots.map(slot => (
-                                        <div key={slot} className="space-y-6">
+                                    groupedSlots.map(groupedSlot => {
+                                        const [slotDate, slotTime] = groupedSlot.split('|');
+                                        const matchingRes = filteredReservations.filter(r => r.date === slotDate && r.time === slotTime);
+                                        return (
+                                        <div key={groupedSlot} className="space-y-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="h-px flex-1 bg-border/50" />
                                                 <div className="flex items-center gap-2 px-6 py-2 bg-muted/30 rounded-full border border-border shadow-sm">
-                                                    <Clock className="w-4 h-4 text-accent" />
-                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">{formatToAmPm(slot)}</span>
+                                                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{slotDate}</span>
+                                                    <Clock className="w-4 h-4 text-accent ml-2" />
+                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">{formatToAmPm(slotTime)}</span>
                                                     <span className="ml-2 px-2 py-0.5 bg-accent/10 text-accent rounded text-[10px] font-bold">
-                                                        {filteredReservations.filter(r => r.time === slot).length}
+                                                        {matchingRes.length}
                                                     </span>
                                                 </div>
                                                 <div className="h-px flex-1 bg-border/50" />
                                             </div>
 
                                             <div className="grid grid-cols-1 gap-4">
-                                                {filteredReservations.filter(r => r.time === slot).map((res) => (
+                                                {matchingRes.map((res) => (
                                                     <div key={res.id} className="group p-4 bg-background rounded-xl border border-border hover:border-primary/20 transition-all duration-300">
                                                         <div className="flex flex-col gap-4">
                                                             <div className="flex items-start justify-between gap-2">
@@ -694,7 +704,8 @@ const Reservations = () => {
                                                 ))}
                                             </div>
                                         </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </div>
                         </CardContent>

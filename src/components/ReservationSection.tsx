@@ -8,8 +8,9 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { normalizeTimeTo24h } from "@/lib/timeSlots";
 
 const guestOptions = ["1", "2", "3", "4", "5", "6", "7", "8+"];
 
@@ -69,12 +70,25 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
     };
   }, []);
 
-  const timeSlots = [];
+  let timeSlots = [];
   for (let hour = 11; hour <= 22; hour++) {
     const period = hour >= 12 ? "PM" : "AM";
     const displayHour = hour > 12 ? hour - 12 : hour;
     timeSlots.push(`${displayHour}:00 ${period}`);
     timeSlots.push(`${displayHour}:30 ${period}`);
+  }
+
+  if (date && isSameDay(date, new Date())) {
+      const now = new Date();
+      const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+
+      timeSlots = timeSlots.filter(slot => {
+          const normalizedTime = normalizeTimeTo24h(slot);
+          const [h, m] = normalizedTime.split(":").map(Number);
+          const slotTotalMin = h * 60 + m;
+          // Only show slots that are AT LEAST 15 minutes in the future to allow booking
+          return slotTotalMin > currentTotalMin + 15;
+      });
   }
 
   const validate = () => {
