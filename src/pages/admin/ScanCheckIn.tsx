@@ -177,23 +177,24 @@ const ScanCheckIn = () => {
                 }
             }
 
-            // Auto-arrival update / Resurrect late reservations
-            if (isExpired) {
+            // Auto-arrival update / Expulsion of late reservations
+            if (isExpired || (reservation.status === "cancelled" && reservation.cancelReason === "auto_expired")) {
                 toast({
                     variant: "destructive",
                     title: "Reservation Expired",
-                    description: `Cannot check in. Guest is ${diffMinutes} minutes late (Max 60 mins allowed).`
+                    description: `Cannot check in. Guest did not arrive within the 60-minute active window.`
                 });
                 reservation.status = "expired";
-                reservation.arrivalNote = arrivalMessage;
-                await updateDoc(doc(db, "reservations", reservation.id), {
-                    status: "cancelled",
-                    cancelReason: "auto_expired",
-                    updatedAt: now,
-                    arrivalNote: arrivalMessage
-                });
-            } else if (["approved", "pending"].includes(reservation.status) || 
-                (reservation.status === "cancelled" && reservation.cancelReason === "auto_expired")) {
+                reservation.arrivalNote = "EXPIRED (Late > 60 mins)";
+                if (reservation.status !== "cancelled") {
+                    await updateDoc(doc(db, "reservations", reservation.id), {
+                        status: "cancelled",
+                        cancelReason: "auto_expired",
+                        updatedAt: now,
+                        arrivalNote: "EXPIRED (Late > 60 mins)"
+                    });
+                }
+            } else if (["approved", "pending"].includes(reservation.status)) {
                 
                 await updateDoc(doc(db, "reservations", reservation.id), {
                     status: "arrived",
@@ -230,7 +231,7 @@ const ScanCheckIn = () => {
                 toast({
                     variant: "destructive",
                     title: "Reservation Cancelled",
-                    description: `This reservation was manually cancelled.`
+                    description: reservation.cancelReason ? `Cancelled: ${reservation.cancelReason}` : `This reservation was manually cancelled.`
                 });
                 reservation.arrivalNote = "CANCELLED";
             } else if (reservation.status === "arrived" || reservation.status === "active") {

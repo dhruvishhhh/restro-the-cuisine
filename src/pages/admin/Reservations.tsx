@@ -626,9 +626,10 @@ const Reservations = () => {
                                                                 )}
                                                             </div>
 
-                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-muted/20 p-3 rounded-lg border border-border/50">
-                                                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                                                                    <Calendar className="w-3 h-3 text-accent" /> {res.date}
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-muted/20 p-4 rounded-xl border border-border/50">
+                                                                <div className="flex items-center gap-2 text-xs text-foreground uppercase font-black tracking-widest bg-background/50 px-3 py-1.5 rounded-lg border border-border">
+                                                                    <Calendar className="w-4 h-4 text-accent" /> 
+                                                                    {res.date ? format(new Date(res.date), "MMM d, yyyy") : "No Date"}
                                                                 </div>
                                                                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
                                                                     <Users className="w-3 h-3 text-sage" /> {res.guests} Guests
