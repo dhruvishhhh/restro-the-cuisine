@@ -260,7 +260,7 @@ const Dashboard = () => {
                                                     <div>
                                                         <p className="font-medium text-foreground">{res.name}</p>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {res.guests} {parseInt(res.guests) === 1 ? "guest" : "guests"} · {res.time} · {res.location}
+                                                            {res.guests} {parseInt(res.guests) === 1 ? "guest" : "guests"} · {res.date && <span className="font-bold text-foreground/80">{res.date}</span>} · {res.time} · {res.location}
                                                         </p>
                                                     </div>
                                                 </div>

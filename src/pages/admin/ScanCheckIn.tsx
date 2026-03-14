@@ -542,7 +542,7 @@ const ScanCheckIn = () => {
                                                         {scannedResult.arrivalNote || "Guest Arrived"}
                                                     </p>
                                                     <p className="text-[10px] text-muted-foreground font-bold">
-                                                        Exact: {format(scannedResult.arrivedAt, "HH:mm:ss")}
+                                                        Exact: {scannedResult.arrivedAt ? format(new Date(scannedResult.arrivedAt.toDate ? scannedResult.arrivedAt.toDate() : scannedResult.arrivedAt), "HH:mm:ss") : "N/A"}
                                                     </p>
                                                 </div>
                                             </div>
