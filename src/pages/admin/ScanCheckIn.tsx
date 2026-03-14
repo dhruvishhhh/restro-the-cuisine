@@ -232,7 +232,7 @@ const ScanCheckIn = () => {
                 const scanner = new QrScanner(
                     videoRef.current,
                     (result) => {
-                        // Handle both old version string results and new object results
+                        console.log("[Scanner] RAW Decode Result:", result);
                         const data = typeof result === 'string' ? result : result?.data;
                         const token = data ? data.trim() : '';
                         if (token && token !== lastScannedToken.current && !processingToken.current) {
@@ -240,15 +240,14 @@ const ScanCheckIn = () => {
                         }
                     },
                     {
-                        returnDetailedScanResult: true,
-                        preferredCamera: "environment",
                         highlightScanRegion: true,
                         highlightCodeOutline: true,
-                        maxScansPerSecond: 25,
+                        maxScansPerSecond: 10, // lowered for stability
                     }
                 );
 
                 qrScannerRef.current = scanner;
+                
                 await scanner.start();
                 setScannerReady(true);
             } catch (e: any) {
@@ -256,7 +255,7 @@ const ScanCheckIn = () => {
                 setError(e.message || "Failed to access camera.");
                 setIsScannerActive(false);
             }
-        }, 100); // Give DOM a moment to mount the video element before starting
+        }, 300); // Give DOM a proper moment to mount the video element before starting
     }, [handleVerifyAndCheckIn, stopScanner]);
 
     // Cleanup on unmount
@@ -272,8 +271,12 @@ const ScanCheckIn = () => {
         setIsProcessing(true);
         try {
             const result = await QrScanner.scanImage(file);
-            if (result) {
-                handleVerifyAndCheckIn(result);
+            console.log("[Scanner] Image RAW Result:", result);
+            const data = typeof result === 'string' ? result : (result as any)?.data;
+            if (data) {
+                handleVerifyAndCheckIn(data);
+            } else {
+                toast({ variant: "destructive", title: "Scan Failed", description: "No clear QR code data could be extracted." });
             }
         } catch (err) {
             console.error("[Scanner] File error:", err);
