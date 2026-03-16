@@ -28,7 +28,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding bg-background relative overflow-hidden" id="experience" ref={ref}>
+    <section className="h-[100dvh] md:h-auto section-padding bg-background relative overflow-hidden flex items-center" id="experience" ref={ref}>
       {/* Decorative Elements */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       <div className="absolute inset-0 mesh-pattern opacity-10 pointer-events-none" />

@@ -3,7 +3,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
   return (
-    <section className={`relative h-[100dvh] w-full overflow-hidden ${topOffset ? 'pt-8' : ''}`} id="hero">
+    <section className={`relative h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
       {/* Background Image with slow zoom */}
       <div className="absolute inset-0 animate-slow-zoom">
         <img
@@ -24,15 +24,15 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.3 }}
-          className="mb-4 md:mb-6"
+          className="mb-8 md:mb-12"
         >
-          <h2 className="text-xs md:text-base uppercase tracking-[0.4em] font-sans font-medium text-primary/90 mb-4 md:mb-8">
+          <h2 className="text-[10px] md:text-base uppercase tracking-[0.4em] font-sans font-medium text-primary/90 mb-6 md:mb-10">
             Est. 2024
           </h2>
-          <h1 className="font-serif text-4xl md:text-7xl lg:text-8xl font-medium text-foreground gold-glow tracking-tight leading-[1.1] drop-shadow-2xl">
+          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium text-foreground gold-glow tracking-tight leading-[1.1] drop-shadow-2xl uppercase">
             Restro
             <br />
-            <span className="text-primary italic">Global Cuisine</span>
+            <span className="text-primary italic lowercase">global cuisine</span>
           </h1>
         </motion.div>
 

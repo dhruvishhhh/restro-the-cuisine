@@ -37,7 +37,7 @@ const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding" id="menu" ref={ref}>
+    <section className="h-[100dvh] md:h-auto section-padding bg-background relative overflow-hidden flex items-center" id="menu" ref={ref}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -92,7 +92,7 @@ const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
         >
           <a
             href={showViewMore ? "/menu" : "/reserve"}
-            className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-sans font-medium text-accent hover:text-gold transition-colors duration-300"
+            className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-sans font-medium text-primary hover:text-primary/80 transition-colors duration-300"
           >
             {showViewMore ? "View All Dishes" : "Request Reservation"}
             <span className="w-8 h-px bg-current" />

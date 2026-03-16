@@ -39,13 +39,14 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
 
   const navLinkClasses = (linkHref: string) => {
     const isActive = location.pathname === linkHref;
-    // Brown text ONLY when on a subpage (cream bg) and NOT scrolled
-    const isLightBg = !scrolled && !isHomePage;
+    // On Home Page (dark teal bg), always use light text
+    // On other pages (cream/light bg), use dark text until scrolled
+    const isDarkBg = isHomePage || scrolled;
 
-    return `text-[10px] uppercase tracking-[0.2em] font-sans font-bold transition-all duration-300 ${isLightBg
-      ? "text-primary hover:text-gold"
-      : "text-primary-foreground hover:text-gold"
-      } ${isActive ? "text-gold" : ""}`;
+    return `text-[10px] uppercase tracking-[0.2em] font-sans font-bold transition-all duration-300 ${isDarkBg
+      ? "text-foreground hover:text-primary"
+      : "text-primary hover:text-primary/60"
+      } ${isActive ? "text-primary !opacity-100" : "opacity-80 hover:opacity-100"}`;
   };
 
   return (
@@ -55,7 +56,7 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed ${topOffset ? 'top-8' : 'top-0'} left-0 right-0 z-50 transition-all duration-500 ${scrolled
-          ? "bg-forest-deep/95 backdrop-blur-md shadow-lg"
+          ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-white/5"
           : "bg-transparent"
           }`}
       >
@@ -65,7 +66,7 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
             {/* Mobile Burger (Left) */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={`md:hidden relative z-[70] p-1.5 ${mobileOpen ? 'text-gold' : 'text-gold'}`}
+              className={`md:hidden relative z-[70] p-1.5 ${mobileOpen ? 'text-primary' : 'text-primary'}`}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -73,11 +74,11 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
 
             <a href="/" className="flex items-center gap-2 group">
               <div className="flex flex-col">
-                <span className="font-serif text-[11px] md:text-lg font-bold tracking-wider text-gold group-hover:text-gold/80 transition-colors">
-                  RESTRO
+                <span className="font-serif text-[11px] md:text-lg font-bold tracking-wider text-primary group-hover:text-primary/80 transition-colors uppercase">
+                  Restro
                 </span>
-                <span className="text-[7px] md:text-[9px] font-serif font-black text-gold/90 -mt-1 tracking-[0.1em]">
-                  GLOBAL CUISINE
+                <span className="text-[7px] md:text-[9px] font-serif font-black text-primary/70 -mt-1 tracking-[0.1em] uppercase">
+                  Global Cuisine
                 </span>
               </div>
             </a>
@@ -100,13 +101,13 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
           <div className="flex items-center gap-1.5 md:gap-3">
             <a
               href="/reserve"
-              className="px-3 md:px-6 py-1.5 md:py-2 border border-gold/40 text-gold font-bold text-[9px] md:text-[11px] uppercase tracking-[0.1em] md:tracking-[0.2em] hover:bg-gold hover:text-primary transition-all duration-300"
+              className="px-3 md:px-6 py-1.5 md:py-2 border border-primary/40 text-primary font-bold text-[9px] md:text-[11px] uppercase tracking-[0.1em] md:tracking-[0.2em] hover:bg-primary hover:text-background transition-all duration-300"
             >
               BOOK
             </a>
             <a
               href="/track"
-              className="hidden xs:block px-3 md:px-6 py-1.5 md:py-2 border border-gold/40 text-gold font-bold text-[9px] md:text-[11px] uppercase tracking-[0.1em] md:tracking-[0.2em] hover:bg-gold hover:text-primary transition-all duration-300"
+              className="hidden xs:block px-3 md:px-6 py-1.5 md:py-2 border border-primary/40 text-primary font-bold text-[9px] md:text-[11px] uppercase tracking-[0.1em] md:tracking-[0.2em] hover:bg-primary hover:text-background transition-all duration-300"
             >
               TRACK
             </a>
@@ -123,12 +124,12 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] bg-forest-deep/[0.98] backdrop-blur-sm flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[60] bg-background/[0.98] backdrop-blur-xl flex flex-col items-center justify-center p-6"
           >
             {/* Close button at top-right */}
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-4 right-4 p-2 text-gold/80 hover:text-gold transition-colors z-[70]"
+              className="absolute top-6 right-6 p-2 text-primary/80 hover:text-primary transition-colors z-[70]"
               aria-label="Close menu"
             >
               <X size={28} />
@@ -146,7 +147,7 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.08 }}
-                    className={`text-base uppercase tracking-[0.25em] font-sans font-medium transition-colors ${isActive ? "text-gold" : "text-primary-foreground/70 hover:text-gold"
+                    className={`text-2xl md:text-4xl uppercase tracking-[0.3em] font-serif font-black transition-colors ${isActive ? "text-primary" : "text-foreground/60 hover:text-primary"
                       }`}
                   >
                     {link.label}
@@ -165,9 +166,9 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className="px-8 py-3 bg-gold text-primary font-bold text-xs uppercase tracking-[0.2em] rounded-sm shadow-lg shadow-gold/20 hover:bg-gold/90 transition-all"
+                className="w-full max-w-xs mt-4 py-4 bg-primary text-background font-black text-xs uppercase tracking-[0.4em] text-center shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all rounded-none"
               >
-                Book A Table
+                Reserve Now
               </motion.a>
             </nav>
           </motion.div>
