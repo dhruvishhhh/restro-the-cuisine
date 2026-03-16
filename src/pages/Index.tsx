@@ -41,31 +41,16 @@ const Index = () => {
       </AnimatePresence>
       <Header topOffset={requirement ? true : false} />
       
-      {/* Scroll Container for Mobile 'Single Screen' Feel */}
-      <main className="snap-y snap-mandatory md:snap-none overflow-y-auto h-[100dvh] md:h-auto scroll-smooth">
-        <div className="snap-start h-[100dvh] md:h-auto overflow-hidden">
-          <HeroSection topOffset={requirement ? true : false} />
-        </div>
-        
-        <div className="snap-start h-[100dvh] md:h-auto">
-          <AboutSection showViewMore={true} />
-        </div>
-        
-        <div className="snap-start h-[100dvh] md:h-auto">
-          <ExperienceSection showViewMore={true} />
-        </div>
-        
-        <div className="snap-start h-[100dvh] md:h-auto bg-background">
-          <MenuPreview showViewMore={true} />
-        </div>
+      <main>
+        <HeroSection topOffset={requirement ? true : false} />
+        <AboutSection showViewMore={true} />
+        <ExperienceSection showViewMore={true} />
+        <MenuPreview showViewMore={true} />
+        <LocationsSection />
 
-        <div className="snap-start h-[100dvh] md:h-auto">
-          <LocationsSection />
-        </div>
-
-        <div className="snap-start min-h-[100dvh] md:min-h-0 bg-background flex flex-col justify-between">
-          <div className="py-20 md:py-24 flex-grow flex flex-col justify-center">
-            <h2 className="section-heading text-center mb-8 md:mb-12 text-3xl md:text-5xl">Capture the Serenity</h2>
+        <div className="bg-background">
+          <div className="py-20 md:py-24">
+            <h2 className="section-heading text-center mb-8 md:mb-12 text-3xl md:text-5xl uppercase tracking-tight">Capture the Serenity</h2>
             <div className="px-4 md:px-0">
               <InstagramGrid />
             </div>

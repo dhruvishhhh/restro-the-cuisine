@@ -13,7 +13,7 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="h-[100dvh] md:h-auto section-padding bg-timber/30 relative overflow-hidden flex items-center" id="about" ref={ref}>
+    <section className="section-padding bg-timber/30 relative overflow-hidden" id="about" ref={ref}>
       {/* Texture background */}
       <div className="absolute inset-0 mesh-pattern opacity-5 pointer-events-none" />
 

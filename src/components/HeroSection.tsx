@@ -1,22 +1,23 @@
 import { motion } from "framer-motion";
-import heroBg from "@/assets/hero-bg.jpg";
+import ambienceHero from "@/assets/ambience-hero.png";
 
 const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
   return (
-    <section className={`relative h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
+    <section className={`relative h-[85dvh] md:h-screen w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
       {/* Background Image with slow zoom */}
       <div className="absolute inset-0 animate-slow-zoom">
         <img
-          src={heroBg}
-          alt="Restro Global Cuisine Bar & Bistro interior"
-          className="w-full h-full object-cover grayscale-[20%] contrast-[110%]"
+          src={ambienceHero}
+          alt="Restro Global Cuisine Bar & Bistro interior ambience"
+          className="w-full h-full object-cover contrast-[105%] brightness-[0.85]"
         />
       </div>
 
       {/* Overlays */}
-      <div className="absolute inset-0 overlay-gradient opacity-80" />
-      <div className="absolute inset-0 mesh-pattern opacity-20" />
-      <div className="absolute inset-0 sunset-glow opacity-40 mix-blend-soft-light" />
+      <div className="absolute inset-0 bg-background/40 md:bg-background/20" />
+      <div className="absolute inset-0 overlay-gradient opacity-60" />
+      <div className="absolute inset-0 mesh-pattern opacity-10" />
+      <div className="absolute inset-0 sunset-glow opacity-30 mix-blend-soft-light" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-6 text-center">
@@ -26,7 +27,7 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
           transition={{ duration: 1.2, delay: 0.3 }}
           className="mb-8 md:mb-12"
         >
-          <h2 className="text-[10px] md:text-base uppercase tracking-[0.4em] font-sans font-medium text-primary/90 mb-6 md:mb-10">
+          <h2 className="text-[10px] md:text-base uppercase tracking-[0.4em] font-sans font-medium text-primary mb-6 md:mb-10">
             Est. 2024
           </h2>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium text-foreground gold-glow tracking-tight leading-[1.1] drop-shadow-2xl uppercase">
@@ -42,8 +43,8 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
           transition={{ duration: 1, delay: 1 }}
           className="relative"
         >
-          <p className="font-serif italic text-sm md:text-lg text-foreground/80 mb-8 md:mb-12 max-w-md relative z-10">
-            A premium multicuisine dining experience.
+          <p className="font-serif italic text-sm md:text-lg text-foreground/90 mb-8 md:mb-12 max-w-md relative z-10 leading-relaxed">
+            Experience the artisan craft <br className="hidden md:block"/> of premium global flavours.
           </p>
           <div className="absolute -inset-4 bg-primary/5 blur-2xl rounded-full -z-10" />
         </motion.div>

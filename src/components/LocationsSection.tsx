@@ -17,7 +17,7 @@ const LocationsSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="h-[100dvh] md:h-auto section-padding bg-card relative overflow-hidden flex items-center" id="locations" ref={ref}>
+    <section className="section-padding bg-card" id="locations" ref={ref}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
