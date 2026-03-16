@@ -57,6 +57,11 @@
     --sidebar-accent-foreground: 195 20% 95%;
     --sidebar-border: 196 30% 20%;
     --sidebar-ring: 28 85% 55%;
+
+    --twilight: 280 40% 30%;
+    --timber: 25 35% 12%;
+    --copper: 35 60% 45%;
+    --sunset: 15 85% 65%;
   }
 
   .dark {
@@ -87,6 +92,11 @@
     --sidebar-accent-foreground: 195 20% 92%;
     --sidebar-border: 196 30% 18%;
     --sidebar-ring: 28 85% 55%;
+
+    --twilight: 280 45% 20%;
+    --timber: 25 40% 8%;
+    --copper: 35 65% 40%;
+    --sunset: 15 90% 60%;
   }
 }
 
@@ -131,6 +141,22 @@
         hsl(196 60% 8% / 0.7) 0%,
         hsl(196 60% 8% / 0.4) 50%,
         hsl(196 60% 8% / 0.8) 100%);
+  }
+
+  .mesh-pattern {
+    background-image: radial-gradient(hsl(var(--primary) / 0.15) 1px, transparent 0);
+    background-size: 30px 30px;
+  }
+
+  .glass-premium {
+    @apply bg-background/40 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+  }
+
+  .sunset-glow {
+    background: radial-gradient(circle at 50% 50%, 
+      hsl(var(--sunset) / 0.15) 0%, 
+      hsl(var(--twilight) / 0.1) 50%, 
+      transparent 100%);
   }
 }
 

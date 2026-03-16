@@ -28,63 +28,83 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding bg-primary" id="experience" ref={ref}>
-      <div className="max-w-7xl mx-auto">
+    <section className="section-padding bg-background relative overflow-hidden" id="experience" ref={ref}>
+      {/* Decorative Elements */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute inset-0 mesh-pattern opacity-10 pointer-events-none" />
+      <div className="absolute inset-0 sunset-glow opacity-30 mix-blend-overlay pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-10 md:mb-24"
+          className="text-center mb-16 md:mb-32"
         >
-          <span className="section-subheading text-gold/80">The Experience</span>
-          <h2 className="section-heading text-primary-foreground mt-4">
+          <span className="section-subheading text-primary">The Experience</span>
+          <h2 className="section-heading text-foreground mt-6 text-balance max-w-4xl mx-auto leading-tight">
             A Restro Global Cuisine Experience for the Senses
           </h2>
+          <div className="mt-8 flex justify-center">
+             <div className="h-1.5 w-1.5 rounded-full bg-primary mx-1" />
+             <div className="h-1.5 w-1.5 rounded-full bg-primary/40 mx-1" />
+             <div className="h-1.5 w-1.5 rounded-full bg-primary/20 mx-1" />
+          </div>
         </motion.div>
 
-        {/* Image Grid */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-10 md:mb-24">
+        {/* Image Grid with Offset */}
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-20 md:mb-36">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, x: -30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="group relative"
           >
-            <img
-              src={exp1}
-              alt="Golden pawn dant lights over wooden tables with plants"
-              className="w-full h-[220px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700 rounded-sm"
-            />
+            <div className="absolute inset-4 border border-primary/30 rounded-sm translate-x-4 translate-y-4 -z-10 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
+            <div className="overflow-hidden rounded-sm">
+              <img
+                src={exp1}
+                alt="Dining interior"
+                className="w-full h-[300px] md:h-[550px] object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out grayscale-[10%]"
+              />
+            </div>
           </motion.div>
+          
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, x: 30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="group relative md:mt-16"
           >
-            <img
-              src={exp2}
-              alt="Cozy bamboo lounge with tropical plants"
-              className="w-full h-[220px] md:h-[450px] object-cover hover:scale-105 transition-transform duration-700 rounded-sm"
-            />
+            <div className="absolute inset-4 border border-primary/30 rounded-sm -translate-x-4 translate-y-4 -z-10 group-hover:-translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
+            <div className="overflow-hidden rounded-sm">
+              <img
+                src={exp2}
+                alt="Cozy interior"
+                className="w-full h-[300px] md:h-[550px] object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out grayscale-[10%]"
+              />
+            </div>
           </motion.div>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+        {/* Features with Timber Accents */}
+        <div className="grid md:grid-cols-3 gap-12 md:gap-20">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 + i * 0.15 }}
-              className="text-center"
+              transition={{ duration: 0.8, delay: 0.5 + i * 0.2 }}
+              className="group"
             >
-              <div className="w-8 h-px bg-gold mx-auto mb-6" />
-              <h3 className="font-serif text-xl md:text-2xl text-primary-foreground mb-4">
+              <div className="flex items-center gap-4 mb-8">
+                <span className="text-[10px] font-bold text-primary/40 group-hover:text-primary transition-colors">0{i + 1}</span>
+                <div className="h-px flex-1 bg-primary/20 group-hover:bg-primary/50 transition-all duration-700" />
+              </div>
+              <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-6 group-hover:text-primary transition-colors duration-500">
                 {feature.title}
               </h3>
-              <p className="text-primary-foreground/60 font-sans text-sm leading-relaxed">
+              <p className="text-foreground/60 font-sans text-base leading-relaxed font-light">
                 {feature.description}
               </p>
             </motion.div>
@@ -92,13 +112,13 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
         </div>
 
         {showViewMore && (
-          <div className="mt-16 text-center">
+          <div className="mt-24 text-center">
             <a
               href="/experience"
-              className="inline-flex items-center gap-4 px-10 py-3 border border-gold/30 text-gold uppercase tracking-[0.3em] text-xs font-bold hover:bg-gold/10 transition-all group"
+              className="inline-flex items-center gap-6 px-12 py-4 border border-primary/30 text-primary uppercase tracking-[0.4em] text-[10px] font-black hover:bg-primary hover:text-background transition-all duration-500 group overflow-hidden relative"
             >
-              Exlpore More Details
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="relative z-10">Explore Our Full Philosophy</span>
+              <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </a>
           </div>
         )}

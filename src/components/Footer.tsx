@@ -1,114 +1,90 @@
 import { Instagram, Facebook, Twitter } from "lucide-react";
 
-const footerLinks = [
-  {
-    heading: "Visit",
-    links: [
-      { label: "Menu", href: "/menu" },
-      { label: "Locations", href: "/locations" },
-      { label: "Book A Table", href: "/reserve" },
-      { label: "Track Request", href: "/track" },
-    ],
-  },
-  {
-    heading: "Explore",
-    links: [
-      { label: "About Us", href: "/about" },
-      { label: "Experience", href: "/experience" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    heading: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Admin Login", href: "/admin/login" },
-    ],
-  },
-];
-
 const Footer = () => {
   return (
-    <footer className="bg-forest-deep text-gold px-6 py-4 md:px-12 md:py-8 font-sans border-t border-gold/10 h-[100dvh] md:h-screen flex flex-col justify-between overflow-hidden" id="contact">
-      <div className="max-w-7xl mx-auto w-full h-full flex flex-col justify-between">
-        {/* Top Bar: Brand & Action Buttons */}
-        <div className="flex justify-between items-center pb-4 border-b border-gold/10">
-          <div className="flex flex-col">
-            <h3 className="text-sm md:text-lg tracking-wider uppercase font-serif font-medium text-gold/90 leading-tight">
-              RESTRO
-            </h3>
-            <span className="text-[8px] md:text-[10px] tracking-[0.2em] font-bold text-gold/60 uppercase mt-0.5">
-              GLOBAL CUISINE
-            </span>
+    <footer className="relative bg-timber pt-24 pb-12 overflow-hidden" id="contact">
+      {/* Decorative Overlays */}
+      <div className="absolute inset-0 mesh-pattern opacity-10 pointer-events-none" />
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-48 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+          {/* Brand Column */}
+          <div className="flex flex-col gap-8">
+            <h2 className="font-serif text-3xl text-foreground gold-glow">
+              Restro<br />
+              <span className="text-primary italic">Global Cuisine</span>
+            </h2>
+            <p className="text-foreground/50 text-sm leading-relaxed max-w-xs font-sans font-light">
+              Crafting conscious culinary experiences where nature meets artisan craft. 
+              Join us for a journey of mindful dining.
+            </p>
+            <div className="flex gap-6">
+              <a href="https://instagram.com" className="text-primary/60 hover:text-primary transition-colors duration-300">
+                <Instagram size={18} />
+              </a>
+              <a href="https://facebook.com" className="text-primary/60 hover:text-primary transition-colors duration-300">
+                <Facebook size={18} />
+              </a>
+              <a href="https://twitter.com" className="text-primary/60 hover:text-primary transition-colors duration-300">
+                <Twitter size={18} />
+              </a>
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            <a
-              href="/reserve"
-              className="px-4 md:px-8 py-2 border border-gold/30 hover:bg-gold/10 transition-colors text-[9px] md:text-xs tracking-[0.2em] font-bold"
-            >
-              BOOK
-            </a>
-            <a
-              href="/track"
-              className="px-4 md:px-8 py-2 border border-gold/30 hover:bg-gold/10 transition-colors text-[9px] md:text-xs tracking-[0.2em] font-bold"
-            >
-              TRACK
-            </a>
+          {/* Quick Links */}
+          <div className="flex flex-col gap-8">
+            <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-primary/40">Navigation</h3>
+            <ul className="flex flex-col gap-4">
+              {['Home', 'Menu', 'Experience', 'About'].map((link) => (
+                <li key={link}>
+                  <a href={link === 'Home' ? '/' : `/${link.toLowerCase()}`} className="text-sm text-foreground/70 hover:text-primary transition-all duration-300 hover:pl-2">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
 
-        {/* Link Grid: Tightly Centered */}
-        <div className="flex-1 flex flex-col justify-center py-2 md:py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 md:gap-y-0 px-1">
-            {footerLinks.map((col) => (
-              <div key={col.heading} className="flex flex-col gap-3 md:gap-4">
-                <h4 className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-gold/30 font-bold">
-                  {col.heading}
-                </h4>
-                <ul className="flex flex-col gap-2 md:gap-3">
-                  {col.links.map((link) => (
-                    <li key={link.label}>
-                      <a
-                        href={link.href}
-                        className="text-[11px] md:text-sm text-gold/70 hover:text-gold transition-colors duration-300 uppercase tracking-widest font-medium"
-                      >
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+          {/* Locations */}
+          <div className="flex flex-col gap-8">
+            <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-primary/40">Locations</h3>
+            <div className="flex flex-col gap-6">
+              <div>
+                <p className="text-sm text-foreground/80 mb-1">Downtown Bistro</p>
+                <p className="text-xs text-foreground/40 font-light font-sans uppercase tracking-tighter">123 Culinary Ave, Suite 100</p>
               </div>
-            ))}
+              <div>
+                <p className="text-sm text-foreground/80 mb-1">Coastal Lounge</p>
+                <p className="text-xs text-foreground/40 font-light font-sans uppercase tracking-tighter">456 Shoreline Dr, Oasis Bay</p>
+              </div>
+            </div>
+          </div>
 
-            {/* Socials Column */}
-            <div className="flex flex-col gap-3 md:gap-4">
-              <h4 className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-gold/30 font-bold">
-                Follow Us
-              </h4>
-              <div className="flex gap-5 mt-0.5">
-                <a href="https://instagram.com" className="text-gold/60 hover:text-gold transition-colors"><Instagram size={18} /></a>
-                <a href="https://facebook.com" className="text-gold/60 hover:text-gold transition-colors"><Facebook size={18} /></a>
-                <a href="https://twitter.com" className="text-gold/60 hover:text-gold transition-colors"><Twitter size={18} /></a>
-              </div>
+          {/* Contact */}
+          <div className="flex flex-col gap-8">
+            <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-primary/40">Connect</h3>
+            <div className="flex flex-col gap-4">
+              <a href="mailto:hello@restro-cuisine.com" className="text-sm text-foreground/70 hover:text-primary transition-colors line-clamp-1">
+                hello@restro-cuisine.com
+              </a>
+              <p className="text-sm text-foreground/70">+1 (555) 000-RESR</p>
+              <a href="/admin/login" className="mt-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-primary hover:text-foreground transition-colors group">
+                Admin Portal
+                <span className="w-4 h-px bg-current opacity-30 group-hover:w-8 transition-all" />
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Branding: Anchored to Very Bottom */}
-        <div className="pt-4 border-t border-gold/10 text-center flex flex-col items-center gap-2">
-          <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/50">
-              A Premium Multicuisine Dining Experience
-            </p>
-            <p className="text-[9px] text-gold/20 tracking-widest uppercase">
-              © 2024 Restro Global Cuisine Bar & Bistro
-            </p>
-          </div>
-
-          <div className="flex gap-4 opacity-30 mt-1 mb-2">
-            <span className="text-[8px] tracking-[0.3em] uppercase">ANAND</span>
+        {/* Bottom Bar */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 font-light">
+            © 2024 Restro Global Cuisine. All Rights Reserved.
+          </p>
+          <div className="flex gap-8">
+            <a href="/privacy" className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-primary transition-colors">Privacy</a>
+            <a href="/terms" className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-primary transition-colors">Terms</a>
           </div>
         </div>
       </div>

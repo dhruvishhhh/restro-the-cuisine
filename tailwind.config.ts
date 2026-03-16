@@ -67,6 +67,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        twilight: "hsl(var(--twilight))",
+        timber: "hsl(var(--timber))",
+        copper: "hsl(var(--copper))",
+        sunset: "hsl(var(--sunset))",
       },
       borderRadius: {
         lg: "var(--radius)",
