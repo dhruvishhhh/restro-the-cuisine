@@ -3,13 +3,13 @@ import ambienceHero from "@/assets/ambience-hero.png";
 
 const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
   return (
-    <section className={`relative h-[85dvh] md:h-screen w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
+    <section className={`relative h-[100dvh] w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
       {/* Background Image with slow zoom */}
-      <div className="absolute inset-0 animate-slow-zoom">
+      <div className="absolute inset-0 animate-slow-zoom overflow-hidden">
         <img
           src={ambienceHero}
           alt="Restro Global Cuisine Bar & Bistro interior ambience"
-          className="w-full h-full object-cover contrast-[105%] brightness-[0.85]"
+          className="w-full h-[115%] object-cover contrast-[105%] brightness-[0.85] -translate-y-[8%] origin-bottom"
         />
       </div>
 

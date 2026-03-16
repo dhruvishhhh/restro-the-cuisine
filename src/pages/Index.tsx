@@ -41,14 +41,28 @@ const Index = () => {
       </AnimatePresence>
       <Header topOffset={requirement ? true : false} />
       
-      <main>
-        <HeroSection topOffset={requirement ? true : false} />
-        <AboutSection showViewMore={true} />
-        <ExperienceSection showViewMore={true} />
-        <MenuPreview showViewMore={true} />
-        <LocationsSection />
+      <main className="overflow-x-hidden">
+        <div className="h-[100dvh] overflow-hidden">
+          <HeroSection topOffset={requirement ? true : false} />
+        </div>
+        
+        <div className="min-h-[100dvh] flex items-center bg-timber/30">
+          <AboutSection showViewMore={true} />
+        </div>
+        
+        <div className="min-h-[100dvh] flex items-center bg-background">
+          <ExperienceSection showViewMore={true} />
+        </div>
+        
+        <div className="min-h-[100dvh] flex items-center bg-background">
+          <MenuPreview showViewMore={true} />
+        </div>
 
-        <div className="bg-background">
+        <div className="min-h-[100dvh] flex items-center bg-card">
+          <LocationsSection />
+        </div>
+
+        <div className="bg-background min-h-screen flex flex-col justify-between">
           <div className="py-20 md:py-24">
             <h2 className="section-heading text-center mb-8 md:mb-12 text-3xl md:text-5xl uppercase tracking-tight">Capture the Serenity</h2>
             <div className="px-4 md:px-0">
