@@ -997,7 +997,7 @@ const Tables = () => {
                                 </div>
                             </CardHeader>
                             <CardContent
-                                className="p-0 bg-[#F8F8F5] relative overflow-hidden h-[600px] w-full border-b border-border shadow-inner cursor-grab active:cursor-grabbing touch-none"
+                                className="p-0 bg-background relative overflow-hidden h-[600px] w-full border-b border-border shadow-inner cursor-grab active:cursor-grabbing touch-none"
                                 ref={containerRef}
                                 onWheel={handleZoom}
                                 onTouchStart={handleTouchStart}
@@ -1022,9 +1022,9 @@ const Tables = () => {
                                             height: 10000,
                                             opacity: 0.05,
                                             backgroundImage: snapToGrid ? `
-                                            linear-gradient(to right, #000 1px, transparent 1px),
-                                            linear-gradient(to bottom, #000 1px, transparent 1px)
-                                         ` : 'radial-gradient(#000 1px, transparent 0)',
+                                            linear-gradient(to right, hsl(var(--foreground) / 0.1) 1px, transparent 1px),
+                                            linear-gradient(to bottom, hsl(var(--foreground) / 0.1) 1px, transparent 1px)
+                                         ` : 'radial-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 0)',
                                             backgroundSize: '40px 40px'
                                         }}
                                     />
@@ -1129,7 +1129,7 @@ const Tables = () => {
                                                         y1={`${line.y1}%`}
                                                         x2={`${line.x2}%`}
                                                         y2={`${line.y2}%`}
-                                                        stroke={line.color || "#C5A059"}
+                                                        stroke={line.color || "hsl(var(--primary))"}
                                                         strokeWidth="1"
                                                         strokeDasharray="4,2"
                                                         initial={{ opacity: 0 }}
@@ -1188,7 +1188,7 @@ const Tables = () => {
                                 );
 
                                 return (
-                                    <Card className="border-gold/30 bg-gold/[0.02] shadow-gold/5 sticky top-8">
+                                    <Card className="border-primary/30 bg-primary/[0.02] shadow-primary/5 sticky top-8">
                                         <CardHeader className="pb-4">
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60">Selected Unit</span>
