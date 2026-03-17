@@ -14,35 +14,41 @@ const InstagramGrid = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-20" ref={ref}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8 }}
-        className="text-center mb-12 px-6"
-      >
-        <span className="section-subheading">@restro.the.cuisine</span>
-        <h2 className="section-heading text-foreground mt-4">
-          Follow the Journey
-        </h2>
-      </motion.div>
+    <section className="bg-background relative overflow-hidden" id="instagram" ref={ref}>
+      <div className="container-custom py-12 md:py-24">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <span className="section-subheading">Social Feed</span>
+          <h2 className="section-heading text-foreground mt-4">@restro_cuisine</h2>
+        </motion.div>
 
-      <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6">
-        {images.map((img, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="aspect-square overflow-hidden group cursor-pointer"
-          >
-            <img
-              src={img}
-              alt={`Instagram post ${i + 1}`}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 filter saturate-[0.85] group-hover:saturate-100"
-            />
-          </motion.div>
-        ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {images.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group relative aspect-square overflow-hidden rounded-sm"
+            >
+              <img
+                src={img}
+                alt="Instagram post"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                <div className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );

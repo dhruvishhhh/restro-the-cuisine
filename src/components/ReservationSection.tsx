@@ -169,7 +169,7 @@ const ReservationSection = ({ fullPage = false }: { fullPage?: boolean }) => {
 
   return (
     <section className={`${fullPage ? 'py-0 md:py-12 lg:py-24' : 'section-padding'} bg-primary`} id="reserve" ref={ref}>
-      <div className={`${fullPage ? 'max-w-7xl' : 'max-w-3xl'} mx-auto px-2 md:px-6`}>
+      <div className="container-custom">
         {!fullPage && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}

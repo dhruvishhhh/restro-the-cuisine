@@ -51,7 +51,7 @@ const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4 md:px-0">
           {menuItems.map((item, i) => (
             <motion.div
               key={item.title}

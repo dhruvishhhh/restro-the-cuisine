@@ -17,7 +17,7 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
       {/* Texture background */}
       <div className="absolute inset-0 mesh-pattern opacity-5 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="container-custom relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-24 items-center">
           {/* Image */}
           <motion.div
@@ -26,12 +26,13 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="relative"
           >
-            <div className="absolute inset-0 border border-primary/20 rounded-sm -z-10 translate-x-3 translate-y-3" />
-            <img
-              src={aboutImg}
-              alt="Artisan coffee being poured with latte art"
-              className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%] group-hover:scale-105 transition-transform duration-[2s] ease-out"
-            />
+            <div className="overflow-hidden rounded-sm shadow-2xl">
+              <img
+                src={aboutImg}
+                alt="Artisan coffee being poured with latte art"
+                className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%] group-hover:scale-105 transition-transform duration-[2s] ease-out"
+              />
+            </div>
           </motion.div>
 
           {/* Text */}

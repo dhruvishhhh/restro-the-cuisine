@@ -34,7 +34,7 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
       <div className="absolute inset-0 mesh-pattern opacity-10 pointer-events-none" />
       <div className="absolute inset-0 sunset-glow opacity-30 mix-blend-overlay pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="container-custom relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -45,10 +45,10 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
           <h2 className="section-heading text-foreground mt-6 text-balance max-w-4xl mx-auto leading-tight">
             A Restro Global Cuisine Experience for the Senses
           </h2>
-          <div className="mt-8 flex justify-center">
-             <div className="h-1.5 w-1.5 rounded-full bg-primary mx-1" />
-             <div className="h-1.5 w-1.5 rounded-full bg-primary/40 mx-1" />
-             <div className="h-1.5 w-1.5 rounded-full bg-primary/20 mx-1" />
+          <div className="mt-8 flex justify-center items-center gap-2">
+             <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+             <div className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+             <div className="h-1.5 w-1.5 rounded-full bg-primary/20" />
           </div>
         </motion.div>
 
@@ -60,7 +60,6 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
             transition={{ duration: 1, delay: 0.2 }}
             className="group relative"
           >
-            <div className="absolute inset-0 border border-primary/20 rounded-sm translate-x-3 translate-y-3 -z-10 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-700" />
             <div className="overflow-hidden rounded-sm shadow-2xl">
               <img
                 src={exp1}
@@ -76,7 +75,6 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
             transition={{ duration: 1, delay: 0.4 }}
             className="group relative"
           >
-            <div className="absolute inset-0 border border-primary/20 rounded-sm -translate-x-3 translate-y-3 -z-10 group-hover:-translate-x-1 group-hover:translate-y-1 transition-transform duration-700" />
             <div className="overflow-hidden rounded-sm shadow-2xl">
               <img
                 src={exp2}
