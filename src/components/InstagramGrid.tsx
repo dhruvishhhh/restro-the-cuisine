@@ -14,7 +14,7 @@ const InstagramGrid = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-24 bg-background w-full flex flex-col items-center" id="instagram">
+    <section className="py-24 bg-background w-full flex flex-col items-center" id="instagram" ref={ref}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
