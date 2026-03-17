@@ -7,7 +7,8 @@ const Footer = () => {
       <div className="absolute inset-0 mesh-pattern opacity-10 pointer-events-none" />
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-48 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="bg-background w-full flex flex-col items-center pt-24 pb-8 border-t border-white/5">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 mb-12 md:mb-20">
           {/* Brand Column */}
           <div className="flex flex-col gap-4 md:gap-8">
@@ -75,8 +76,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 md:pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-foreground/30 font-light text-center">
+        <div className="pt-8 md:pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
+          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-foreground/30 font-light text-center md:text-left">
             © 2024 Restro Global Cuisine. All Rights Reserved.
           </p>
           <div className="flex gap-6 md:gap-8">
@@ -84,6 +85,7 @@ const Footer = () => {
             <a href="/terms" className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-foreground/30 hover:text-primary transition-colors">Terms</a>
           </div>
         </div>
+      </div>
       </div>
     </footer>
   );

@@ -24,7 +24,7 @@ const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
       <div className="absolute inset-0 sunset-glow opacity-30 mix-blend-soft-light" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-6 text-center mx-auto max-w-5xl">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

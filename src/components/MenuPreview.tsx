@@ -37,8 +37,8 @@ const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding bg-background relative overflow-hidden" id="menu" ref={ref}>
-      <div className="max-w-7xl mx-auto">
+    <section className="section-padding flex flex-col items-center bg-background relative overflow-hidden w-full" id="menu" ref={ref}>
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -51,7 +51,7 @@ const MenuPreview = ({ showViewMore = false }: MenuPreviewProps) => {
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4 md:px-0">
+        <div className="grid md:grid-cols-3 gap-8 w-full max-w-6xl mx-auto">
           {menuItems.map((item, i) => (
             <motion.div
               key={item.title}

@@ -13,11 +13,11 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding bg-timber/30 relative overflow-hidden" id="about" ref={ref}>
+    <section className="section-padding flex flex-col items-center bg-timber/30 relative overflow-hidden w-full" id="about" ref={ref}>
       {/* Texture background */}
       <div className="absolute inset-0 mesh-pattern opacity-5 pointer-events-none" />
 
-      <div className="container-custom relative z-10">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-24 items-center">
           {/* Image */}
           <motion.div
@@ -26,13 +26,12 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="relative"
           >
-            <div className="overflow-hidden rounded-sm shadow-2xl">
-              <img
-                src={aboutImg}
-                alt="Artisan coffee being poured with latte art"
-                className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%] group-hover:scale-105 transition-transform duration-[2s] ease-out"
-              />
-            </div>
+            <div className="absolute inset-0 border border-primary/20 rounded-sm -z-10 translate-x-3 translate-y-3" />
+            <img
+              src={aboutImg}
+              alt="Artisan coffee being poured with latte art"
+              className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%] group-hover:scale-105 transition-transform duration-[2s] ease-out"
+            />
           </motion.div>
 
           {/* Text */}

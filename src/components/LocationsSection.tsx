@@ -17,8 +17,8 @@ const LocationsSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="section-padding bg-card" id="locations" ref={ref}>
-      <div className="container-custom">
+    <section className="section-padding flex flex-col items-center bg-card w-full" id="locations" ref={ref}>
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -29,14 +29,14 @@ const LocationsSection = () => {
           <h2 className="section-heading text-foreground mt-4">Our Locations</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 gap-6 max-w-lg mx-auto px-4">
           {locations.map((loc, i) => (
             <motion.div
               key={loc.name}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="border border-border p-6 md:p-8 hover:border-gold/40 transition-colors duration-500 group text-center flex flex-col items-center"
+              className="border border-border p-6 md:p-8 hover:border-gold/40 transition-colors duration-500 group text-center"
             >
               <MapPin className="w-5 h-5 text-gold mb-4 mx-auto" />
               <h3 className="font-serif text-xl md:text-2xl text-foreground mb-1">

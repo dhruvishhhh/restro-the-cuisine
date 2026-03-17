@@ -55,12 +55,12 @@ const Header = ({ topOffset = false }: { topOffset?: boolean }) => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`fixed ${topOffset ? 'top-8' : 'top-0'} left-0 right-0 z-50 transition-all duration-500 ${scrolled
+        className={`fixed ${topOffset ? 'top-8' : 'top-0'} left-0 right-0 z-50 flex justify-center transition-all duration-500 ${scrolled
           ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-white/5"
           : "bg-transparent"
           }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-3 md:px-12 py-3 md:py-4">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between px-3 md:px-12 py-3 md:py-4">
 
           <div className="flex items-center gap-2 md:gap-8">
             {/* Mobile Burger (Left) */}
