@@ -1,16 +1,20 @@
 import { motion } from "framer-motion";
-import ambienceHero from "@/assets/ambience-hero.png";
+import heroDesktop from "@/assets/hero-desktop.jpg";
+import heroMobile from "@/assets/hero-mobile.jpg";
 
 const HeroSection = ({ topOffset = false }: { topOffset?: boolean }) => {
   return (
     <section className={`relative h-[100dvh] w-full overflow-hidden flex items-center justify-center ${topOffset ? 'pt-8' : ''}`} id="hero">
       {/* Background Image with slow zoom */}
       <div className="absolute inset-0 animate-slow-zoom overflow-hidden">
-        <img
-          src={ambienceHero}
-          alt="Restro Global Cuisine Bar & Bistro interior ambience"
-          className="w-full h-[115%] object-cover contrast-[105%] brightness-[0.85] -translate-y-[8%] origin-bottom"
-        />
+        <picture className="w-full h-[115%]">
+          <source media="(max-width: 768px)" srcSet={heroMobile} />
+          <img
+            src={heroDesktop}
+            alt="Restro Global Cuisine interior ambience"
+            className="w-full h-full object-cover contrast-[105%] brightness-[0.85] -translate-y-[8%] origin-bottom"
+          />
+        </picture>
       </div>
 
       {/* Overlays */}
