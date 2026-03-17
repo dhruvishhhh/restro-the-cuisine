@@ -26,11 +26,11 @@ const AboutSection = ({ showViewMore = false }: AboutSectionProps) => {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="relative"
           >
-            <div className="absolute -inset-4 border border-primary/20 rounded-sm -z-10 translate-x-4 translate-y-4" />
+            <div className="absolute inset-0 border border-primary/20 rounded-sm -z-10 translate-x-3 translate-y-3" />
             <img
               src={aboutImg}
               alt="Artisan coffee being poured with latte art"
-              className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%]"
+              className="w-full h-[320px] md:h-[650px] object-cover rounded-sm shadow-2xl grayscale-[10%] contrast-[105%] group-hover:scale-105 transition-transform duration-[2s] ease-out"
             />
           </motion.div>
 

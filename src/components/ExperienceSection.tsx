@@ -52,20 +52,20 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
           </div>
         </motion.div>
 
-        {/* Image Grid with Offset */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-20 md:mb-36">
+        {/* Image Grid with Offset Removed for better alignment */}
+        <div className="grid md:grid-cols-2 gap-12 md:gap-16 mb-20 md:mb-32 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1, delay: 0.2 }}
             className="group relative"
           >
-            <div className="absolute inset-4 border border-primary/30 rounded-sm translate-x-4 translate-y-4 -z-10 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
-            <div className="overflow-hidden rounded-sm">
+            <div className="absolute inset-0 border border-primary/20 rounded-sm translate-x-3 translate-y-3 -z-10 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-700" />
+            <div className="overflow-hidden rounded-sm shadow-2xl">
               <img
                 src={exp1}
                 alt="Dining interior"
-                className="w-full h-[300px] md:h-[550px] object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out grayscale-[10%]"
+                className="w-full h-[350px] md:h-[500px] object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out grayscale-[10%]"
               />
             </div>
           </motion.div>
@@ -74,14 +74,14 @@ const ExperienceSection = ({ showViewMore = false }: ExperienceSectionProps) => 
             initial={{ opacity: 0, x: 30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1, delay: 0.4 }}
-            className="group relative md:mt-16"
+            className="group relative"
           >
-            <div className="absolute inset-4 border border-primary/30 rounded-sm -translate-x-4 translate-y-4 -z-10 group-hover:-translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
-            <div className="overflow-hidden rounded-sm">
+            <div className="absolute inset-0 border border-primary/20 rounded-sm -translate-x-3 translate-y-3 -z-10 group-hover:-translate-x-1 group-hover:translate-y-1 transition-transform duration-700" />
+            <div className="overflow-hidden rounded-sm shadow-2xl">
               <img
                 src={exp2}
                 alt="Cozy interior"
-                className="w-full h-[300px] md:h-[550px] object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out grayscale-[10%]"
+                className="w-full h-[350px] md:h-[500px] object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out grayscale-[10%]"
               />
             </div>
           </motion.div>
